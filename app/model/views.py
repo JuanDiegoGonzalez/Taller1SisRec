@@ -9,6 +9,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from model.forms import CreateForm
 from model.process import proceso
 
+import time
+
 class ModelCreateView(LoginRequiredMixin, CreateView):
     template_name = 'model/model_form.html'
     success_url = reverse_lazy('model:model_result')
@@ -24,12 +26,15 @@ class ModelCreateView(LoginRequiredMixin, CreateView):
         if not form.is_valid():
             return render(request, self.template_name, {'form': form})
         
-        # Loading icon
-
         model = form.save(commit=False)
         model.owner = request.user
 
+        start_time = time.time()  # Start timer
         predicciones = proceso(model.modelo, model.tipo, model.k, int(model.owner.username))
+        end_time = time.time()  # End timer
+        elapsed_time = end_time - start_time
+        print(f"Elapsed time: {elapsed_time:.4f} seconds")
+        
         predicciones_json = predicciones.to_dict(orient='records')
 
         request.session['predicciones'] = predicciones_json
