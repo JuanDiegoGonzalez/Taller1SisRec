@@ -1,0 +1,54 @@
+{% extends "base_menu.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container mt-4 d-flex justify-content-center">
+    <div class="card shadow-sm p-3" style="max-width: 600px; width: 100%;">  
+      <div class="card-header bg-primary text-white">
+          <h4 class="mb-0">Generar predicciones</h4>
+      </div>
+      <div class="card-body">
+          <form action="" method="post" id="upload_form" enctype="multipart/form-data" class="needs-validation" novalidate>
+              {% csrf_token %}
+              
+              <!-- Crispy Forms -->
+              <div class="mb-3">
+                  {{ form|crispy }}
+              </div>
+
+              <!-- Buttons -->
+              <div class="d-flex gap-2">
+                  <button type="submit" class="btn btn-success btn-custom w-50" id="submit-button">
+                      <i class="bi bi-upload"></i> Enviar
+                  </button>
+                  <button type="reset" class="btn btn-secondary btn-custom w-50" id="clear-button">
+                      <i class="bi bi-x-circle"></i> Limpiar
+                  </button>
+              </div>
+          </form>
+
+          <!-- Loading Indicator (Initially Hidden) -->
+          <div id="loading-indicator" class="text-center mt-4" style="display: none;">
+              <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">Loading...</span>
+              </div>
+              <p class="mt-2">Generando predicciones...</p>
+          </div>
+      </div>
+  </div>
+</div>
+
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+
+<!-- JavaScript to Handle Loading Animation -->
+<script>
+  document.getElementById("upload_form").addEventListener("submit", function(event) {
+      // Hide form and show loading indicator
+      document.getElementById("submit-button").disabled = true;
+      document.getElementById("clear-button").disabled = true;
+      document.getElementById("loading-indicator").style.display = "block";
+  });
+</script>
+
+{% endblock %}
