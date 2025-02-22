@@ -27,7 +27,7 @@
             {% if field.name == "username" %}
             {{ field|add_class:"form-control"|attr:"placeholder:154 (entre 10 y 943)" }}
             {% elif field.name == "password" %}
-            {{ field|add_class:"form-control"|attr:"placeholder:password154" }}
+            {{ field|add_class:"form-control"|attr:"placeholder:password154 (\"password\" + el número de arriba)" }}
             {% else %}
             {{ field|add_class:"form-control" }}
             {% endif %}
