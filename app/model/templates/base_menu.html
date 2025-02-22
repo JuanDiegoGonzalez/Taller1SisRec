@@ -10,6 +10,7 @@
             {% endif %}
         </a>
         <ul class="navbar-nav">
+            {% if user.is_authenticated %}
             <li>
                 <a class="nav-link" href="{% url 'model:model_create' %}" role="button">Nueva predicción</a>
             </li>
@@ -25,6 +26,7 @@
                     </form>
                 </ul>
             </li>
+            {% endif %}
         </ul>
     </div>
 </nav>
