@@ -53,17 +53,17 @@ def proceso(p_model_name, p_user_based, k, id_usuario):
     # ----------------------------------------------------------------
 
     # 3.ii) Se crea un modelo knnbasic? (#TODO) usuario-usuario con similitud coseno
-    sim_options = {'name': model_name,
-                   'user_based': user_based
-                  }
-    algo = KNNBasic(k=k, min_k=2, sim_options=sim_options)
-    algo.fit(trainset=train_set)
+    #sim_options = {'name': model_name,
+    #               'user_based': user_based
+    #              }
+    #algo = KNNBasic(k=k, min_k=2, sim_options=sim_options)
+    #algo.fit(trainset=train_set)
 
-    print(algo.predict(id_usuario,302))
-    print(items[items['movie id']==302][["movie id", "movie title", "release date"]], end="\n\n")
+    #print(algo.predict(id_usuario,302))
+    #print(items[items['movie id']==302][["movie id", "movie title", "release date"]], end="\n\n")
 
-    test_predictions=algo.test(test_set)
-    print(accuracy.rmse(test_predictions, verbose = True), end="\n\n")
+    #test_predictions=algo.test(test_set)
+    #print(accuracy.rmse(test_predictions, verbose = True), end="\n\n")
 
     # ----------------------------------------------------------------
     # Generando listas de predicciones para los usuarios:
