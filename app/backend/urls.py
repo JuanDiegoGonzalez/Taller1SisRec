@@ -23,6 +23,7 @@ from django.views.generic import RedirectView
 urlpatterns = [
     path('', RedirectView.as_view(url='/model/', permanent=True)),
     path('model/', include('model.urls')),
+    path('movies/', include('movies.urls')),
     path('admin/', admin.site.urls),
     path('accounts/', include('django.contrib.auth.urls')),
 ]
@@ -41,7 +42,7 @@ urlpatterns += [
 urlpatterns += [
     path('favicon.ico', serve, {
             'path': 'favicon.ico',
-            'document_root': os.path.join(BASE_DIR, 'model/static'),
+            'document_root': os.path.join(BASE_DIR, 'home/static'),
         }
     ),
 ]

@@ -11,7 +11,7 @@
         </a>
         <ul class="navbar-nav">
             <li>
-                <a class="nav-link" href="{% url 'model:model_movies' %}" role="button">Lista de películas</a>
+                <a class="nav-link" href="{% url 'movies:movie_list' %}" role="button">Lista de películas</a>
             </li>
             {% if user.is_authenticated %}
             <li>
@@ -20,7 +20,7 @@
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="rightnavDropdown" role="button"
                     data-bs-toggle="dropdown" aria-expanded="false">
-                    <img style="width: 25px;" src="/site/model/static/usuario.png" /><b class="caret"></b>
+                    <img style="width: 25px;" src="/site/home/static/usuario.png" /><b class="caret"></b>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="rightnavDropdown">
                     <form class="dropdown-item" action="{% url 'logout' %}?next={% url 'login' %}" method="post">

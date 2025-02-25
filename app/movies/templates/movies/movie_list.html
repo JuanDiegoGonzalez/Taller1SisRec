@@ -19,7 +19,7 @@
             <input class="form-control me-2" type="text" placeholder="Search.." name="search"
                    {% if search %} value="{{ search }}" {% endif %}>
             <button class="btn btn-primary me-2" type="submit"><i class="fa fa-search"></i></button>
-            <a href="{% url 'model:model_movies' %}" class="btn btn-secondary me-2"><i class="fa fa-undo"></i></a>
+            <a href="{% url 'movies:movie_list' %}" class="btn btn-secondary me-2"><i class="fa fa-undo"></i></a>
             {% if user.is_authenticated %}
             <a href="?filter_rated=true" class="btn btn-warning w-100">Ver mis calificaciones</a>
             {% endif %}
@@ -57,7 +57,7 @@
                     </td>                    
                     {% endif %}
                     <td>
-                        <a href="{% url 'model:movie_detail' item.movie_id %}">Ver detalles</a>
+                        <a href="{% url 'movies:movie_detail' item.movie_id %}">Ver detalles</a>
                     </td>
                 </tr>
                 {% endfor %}

@@ -46,7 +46,10 @@ INSTALLED_APPS = [
     'rest_framework',
     'widget_tweaks',
 
-    'model.apps.ModelConfig'
+    'home.apps.HomeConfig',
+
+    'model.apps.ModelConfig',
+    'movies.apps.MoviesConfig'
 ]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
