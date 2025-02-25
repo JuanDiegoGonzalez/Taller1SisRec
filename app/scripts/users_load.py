@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
 
 def run():
-    file_path = "model/users.csv"  # Adjust the path if needed
+    file_path = "model/users.csv"
     with open(file_path, newline='', encoding='utf-8') as f:
         reader = csv.reader(f, delimiter=";")
         #next(reader)  # Skip the header row
