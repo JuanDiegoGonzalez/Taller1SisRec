@@ -36,7 +36,7 @@
                     {% if user.is_authenticated %}
                     <th>Rating</th>
                     {% endif %}
-                    <th>IMDb URL</th>
+                    <th>Detalles</th>
                 </tr>
             </thead>
             <tbody>
@@ -57,7 +57,7 @@
                     </td>                    
                     {% endif %}
                     <td>
-                        <a href="{{ item.imdb_url }}" target="_blank">IMDb</a>
+                        <a href="{% url 'model:movie_detail' item.movie_id %}">Ver detalles</a>
                     </td>
                 </tr>
                 {% endfor %}

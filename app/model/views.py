@@ -95,6 +95,22 @@ class ModelMoviesView(View):
         context = {'page_obj' : page_obj, 'search': strval, 'filter_rated': filter_rated}
         return render(request, self.template_name, context)
 
+class MovieDetailView(View):
+    template_name = "model/movie_detail.html"
+
+    def get(self, request, pk) :
+        items=pd.read_csv('../Dataset 100k/u.item', engine ='python', sep = '\|', names = ['movie_id' ,'movie_title','release_date','video release date','imdb_url','unknown',
+                                                'Action','Adventure','Animation','Children','Comedy','Crime','Documentary','Drama',
+                                                'Fantasy','Film_Noir','Horror','Musical','Mystery','Romance','Sci_Fi','Thriller','War','Western'], encoding='latin-1' )
+
+        movie = items[items["movie_id"] == pk]
+        movie_json = movie.to_dict(orient='records')
+
+        print(movie_json)
+
+        context = { 'movie' : movie_json[0]}
+        return render(request, self.template_name, context)
+
 @csrf_exempt
 # TODO
 def rate_movie(request, movie_id, rating):
