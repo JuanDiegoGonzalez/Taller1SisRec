@@ -14,6 +14,7 @@ Python 3.12.9
 
 1. Clonar el repositorio
 2. Desde una terminal, en la carpeta raíz del repositorio, ejecutar los comandos:
+   - `pip install -r requirements.txt`
    - `py .\app\manage.py makemigrations`
    - `py .\app\manage.py migrate`
    - `py .\app\manage.py runserver`
