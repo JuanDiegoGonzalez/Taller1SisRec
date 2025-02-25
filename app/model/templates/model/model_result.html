@@ -2,7 +2,7 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-<h1 class="mb-4" style="margin-top: 0.3em;">Predicciones para el usuario {{ request.user }}:</h1>
+<h1 class="text-center mb-4" style="margin-top: 0.3em;">🔮 Predicciones para el usuario {{ request.user }}</h1>
 <div class="table-responsive">
     <table class="table table-striped table-bordered">
         <thead class="table-dark">
@@ -21,7 +21,7 @@
                 <td>{{ prediccion.movie_title }}</td>
                 <td>
                     <a href="{{ prediccion.imdb_url }}" target="_blank">
-                        IMDbS
+                        IMDb
                     </a>
                 </td>
             </tr>

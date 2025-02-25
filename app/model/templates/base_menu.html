@@ -10,6 +10,9 @@
             {% endif %}
         </a>
         <ul class="navbar-nav">
+            <li>
+                <a class="nav-link" href="{% url 'model:model_movies' %}" role="button">Lista de películas</a>
+            </li>
             {% if user.is_authenticated %}
             <li>
                 <a class="nav-link" href="{% url 'model:model_create' %}" role="button">Nueva predicción</a>
@@ -25,6 +28,10 @@
                         <a href="#" onclick="this.closest('form').submit(); return false;">Logout</a>
                     </form>
                 </ul>
+            </li>
+            {% else %}
+            <li>
+                <a class="nav-link" href="{% url 'login' %}" role="button">Iniciar sesión</a>
             </li>
             {% endif %}
         </ul>

@@ -30,7 +30,8 @@
 
             <!-- Progress Bar (Initially Hidden) -->
             <div id="loading-indicator" class="text-center mt-4" style="display: none;">
-                <p class="mt-2">⏳ Generando predicciones... (tarda alrededor de 1 minuto)</p>
+                <!-- <p class="mt-2">⏳ Generando predicciones... (tarda alrededor de 1 minuto)</p> -->
+                <p class="mt-2">⏳ Generando predicciones... (tarda alrededor de 30 segundos)</p>
                 <div class="progress" style="height: 25px;">
                     <div id="progress-bar" class="progress-bar progress-bar-striped progress-bar-animated bg-primary"
                         role="progressbar" style="width: 0%;">0%</div>
@@ -58,7 +59,7 @@
 
         let progressBar = document.getElementById("progress-bar");
         let progress = 0;
-        let duration = 65000;  // 100 seconds
+        let duration = 35000;  // 100 seconds
         let intervalTime = duration / 100; // Update every 1% of duration
 
         let interval = setInterval(() => {

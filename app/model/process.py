@@ -32,16 +32,16 @@ def proceso(p_model_name, p_user_based, k, id_usuario):
     # en el dataset descargado, en la pestaña files
     # ----------------------------------------------------------------
 
-    ratings=pd.read_csv('../Dataset 100k/u.data', sep = '\t', names = [ 'user_id', 'item_id', 'rating', 'timestamp' ] )
+    ratings=pd.read_csv('../Dataset 100k/u.data', engine ='python', sep = '\t', names = [ 'user_id', 'item_id', 'rating', 'timestamp' ] )
 
-    items=pd.read_csv('../Dataset 100k/u.item', sep = '\|', names = ['movie id' ,'movie title','release date','video release date','IMDb URL ','unknown',
+    items=pd.read_csv('../Dataset 100k/u.item', engine ='python', sep = '\|', names = ['movie id' ,'movie title','release date','video release date','IMDb URL ','unknown',
                                                                     'Action','Adventure','Animation','Children','Comedy','Crime','Documentary','Drama',
                                                                     'Fantasy','Film-Noir','Horror','Musical','Mystery','Romance','Sci-Fi','Thriller','War','Western'], encoding='latin-1' )
 
     reader = Reader( rating_scale = ( 1, 5 ) )
     surprise_dataset = Dataset.load_from_df(ratings[['user_id', 'item_id', 'rating']], reader)
 
-    train_set, test_set =  train_test_split(surprise_dataset, test_size=.2)
+    #train_set, test_set =  train_test_split(surprise_dataset, test_size=.2)
 
     print("----------------------------------------------------------------")
     print(model_name, "Usuario-Usuario" if user_based else "Item-Item", k)
