@@ -64,22 +64,27 @@ class ModelMoviesView(View):
                                                 'Action','Adventure','Animation','Children','Comedy','Crime','Documentary','Drama',
                                                 'Fantasy','Film-Noir','Horror','Musical','Mystery','Romance','Sci-Fi','Thriller','War','Western'], encoding='latin-1' )
 
-        ratings=pd.read_csv('../Dataset 100k/u.data', engine ='python', sep = '\t', names = ['user_id', 'movie_id', 'rating', 'timestamp'])
+        if request.user.is_authenticated:
+            ratings=pd.read_csv('../Dataset 100k/u.data', engine ='python', sep = '\t', names = ['user_id', 'movie_id', 'rating', 'timestamp'])
+            
+            user_id = int(request.user.username)
+            user_ratings = ratings[ratings["user_id"] == user_id][["movie_id", "rating"]]
+
+            items = items.merge(user_ratings, on="movie_id", how="left")
+            items["rating"].fillna(0, inplace=True)
+
+            if filter_rated:
+                items = items[items["rating"] > 0]
+                strval = None
         
-        user_id = int(request.user.username)
-        user_ratings = ratings[ratings["user_id"] == user_id][["movie_id", "rating"]]
-
-        items = items.merge(user_ratings, on="movie_id", how="left")
-        items["rating"].fillna(0, inplace=True)
-
-        if filter_rated:
-            items = items[items["rating"] > 0]
-            strval = None
-        elif strval:
+        if strval:
            items = items[items["movie_title"].str.contains(strval, case=False, na=False)]
 
         # TODO: Cambiar y seleccionar columnas, o hacer detail de cada película
-        items_json = items[["movie_id", "movie_title", "imdb_url", "rating"]].to_dict(orient='records')
+        if request.user.is_authenticated:
+            items_json = items[["movie_id", "movie_title", "imdb_url", "rating"]].to_dict(orient='records')
+        else:
+            items_json = items[["movie_id", "movie_title", "imdb_url"]].to_dict(orient='records')
 
         paginator = Paginator(items_json, 10)
         page_number = request.GET.get("page")
