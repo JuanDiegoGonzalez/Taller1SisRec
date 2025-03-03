@@ -11,7 +11,15 @@ from model.process import proceso
 
 import time
 
-class ModelCreateView(LoginRequiredMixin, CreateView):
+#-------------------------------------
+# Nuevo endpoint
+#-------------------------------------
+
+
+#-------------------------------------
+# Anteriores endpoints
+#-------------------------------------
+class ModelOldCreateView(LoginRequiredMixin, CreateView):
     template_name = 'model/model_form.html'
     success_url = reverse_lazy('model:model_result')
 
@@ -40,7 +48,7 @@ class ModelCreateView(LoginRequiredMixin, CreateView):
         request.session['predicciones'] = predicciones_json
         return redirect(self.success_url)
 
-class ModelResultView(View):
+class ModelOldResultView(View):
     template_name = "model/model_result.html"
 
     def get(self, request) :

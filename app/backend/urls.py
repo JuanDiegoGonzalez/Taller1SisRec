@@ -21,9 +21,8 @@ from django.views.static import serve
 from django.views.generic import RedirectView
 
 urlpatterns = [
-    path('', RedirectView.as_view(url='/model/', permanent=True)),
-    path('model/', include('model.urls')),
     path('movies/', include('movies.urls')),
+    path('model/', include('model.urls')),
     path('admin/', admin.site.urls),
     path('accounts/', include('django.contrib.auth.urls')),
 ]
