@@ -10,11 +10,15 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from model.forms import CreateForm
 from model.process import proceso
 
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+
 import time, json
 
 #-------------------------------------
 # Nuevo endpoint
 #-------------------------------------
+@method_decorator(csrf_exempt, name="dispatch")
 class ModelView(View):
     template_name = "movies/movie_list.html"
 
@@ -33,7 +37,8 @@ class ModelView(View):
 
             # Start processing
             start_time = time.time()
-            predicciones = proceso(modelo, tipo, k, int(request.user.username))
+            print(modelo, tipo, k, int(data.get('user').get('username')))
+            predicciones = proceso(modelo, tipo, k, int(data.get('user').get('username')))
             end_time = time.time()
             elapsed_time = end_time - start_time
             print(f"Elapsed time: {elapsed_time:.4f} seconds")

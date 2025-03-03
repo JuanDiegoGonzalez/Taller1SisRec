@@ -18,9 +18,9 @@ import os
 from django.contrib import admin
 from django.urls import path, include, re_path
 from django.views.static import serve
-from django.views.generic import RedirectView
 
 urlpatterns = [
+    path('', include('home.urls')),
     path('movies/', include('movies.urls')),
     path('model/', include('model.urls')),
     path('admin/', admin.site.urls),
