@@ -96,6 +96,13 @@ DATABASES = {
     }
 }
 
+# Configurar Django REST Framework para usar sesión en lugar de Token
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',  # Usa sesiones en lugar de tokens
+        'rest_framework.authentication.BasicAuthentication',
+    ],
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators

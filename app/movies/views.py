@@ -8,7 +8,11 @@ from django.core.paginator import Paginator
 import pandas as pd
 
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
+
+from django.http import JsonResponse
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
 #-------------------------------------
 # Nuevos endpoints
@@ -78,19 +82,18 @@ class MovieDetailView(View):
         context = { 'movie' : movie_json[0]}
         return JsonResponse(context)
 
-@csrf_exempt
-# TODO
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def rate_movie(request, movie_id, rating):
-    if request.method == 'POST' and request.user.is_authenticated:
-        # Aquí debes guardar la calificación en la base de datos
-        print(f'Usuario {request.user} calificó la película {movie_id} con {rating} estrellas.')
-        
-        # Suponiendo que tienes un modelo MovieRating:
-        # MovieRating.objects.update_or_create(user=request.user, movie_id=movie_id, defaults={'rating': rating})
+    user = request.user  # Usuario autenticado
 
-        return JsonResponse({'message': 'Calificación registrada con éxito'}, status=200)
-    
-    return JsonResponse({'error': 'No autorizado'}, status=403)
+    # Aquí debes guardar la calificación en la base de datos
+    print(f'Usuario {user} calificó la película {movie_id} con {rating} estrellas.')
+
+    # Ejemplo con un modelo MovieRating
+    # MovieRating.objects.update_or_create(user=user, movie_id=movie_id, defaults={'rating': rating})
+
+    return Response({'message': 'Calificación registrada con éxito'}, status=200)
 
 #-------------------------------------
 # Anteriores endpoints

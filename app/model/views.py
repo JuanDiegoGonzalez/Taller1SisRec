@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.generic.edit import CreateView
 
@@ -9,12 +10,46 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from model.forms import CreateForm
 from model.process import proceso
 
-import time
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+
+import time, json
 
 #-------------------------------------
 # Nuevo endpoint
 #-------------------------------------
+@method_decorator(csrf_exempt, name="dispatch")
+class ModelView(View):
+    template_name = "movies/movie_list.html"
 
+    def get(self, request):
+        return JsonResponse({"error": "Only POST allowed"}, status=405)
+
+    def post(self, request):
+        try:
+            data = json.loads(request.body)  # Get JSON data from request
+            modelo = data.get('modelo')
+            tipo = data.get('tipo')
+            k = data.get('k')
+
+            if not modelo or not tipo or k is None:
+                return JsonResponse({"error": "Missing required fields"}, status=400)
+
+            # Start processing
+            start_time = time.time()
+            print(modelo, tipo, k, int(data.get('user').get('username')))
+            predicciones = proceso(modelo, tipo, k, int(data.get('user').get('username')))
+            end_time = time.time()
+            elapsed_time = end_time - start_time
+            print(f"Elapsed time: {elapsed_time:.4f} seconds")
+
+            # Convert predictions to JSON format
+            predicciones_json = predicciones.to_dict(orient='records')
+
+            return JsonResponse(predicciones_json, safe=False)
+
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON"}, status=400)
 
 #-------------------------------------
 # Anteriores endpoints
