@@ -1,0 +1,57 @@
+{% extends "base_menu.html" %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">📝 Registro de Usuario</h1>
+
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <form method="post" action="{% url 'register' %}" class="card p-4 shadow-sm">
+                {% csrf_token %}
+
+                <!-- Display form fields with placeholders -->
+                {% for field in form %}
+                <div class="mb-3 row">
+                    <label for="{{ field.id_for_label }}" class="col-sm-4 col-form-label text-end">
+                        {{ field.label }}
+                    </label>
+                    <div class="col-sm-8">
+                        {% if field.name == "username" %}
+                        {{ field|add_class:"form-control"|attr:"placeholder:Ejemplo: usuario123" }}
+                        {% elif field.name == "email" %}
+                        {{ field|add_class:"form-control"|attr:"placeholder:Ejemplo: correo@email.com" }}
+                        {% elif field.name == "password1" %}
+                        {{ field|add_class:"form-control"|attr:"placeholder:Elige una contraseña segura" }}
+                        {% elif field.name == "password2" %}
+                        {{ field|add_class:"form-control"|attr:"placeholder:Repite la contraseña" }}
+                        {% else %}
+                        {{ field|add_class:"form-control"|attr:"placeholder:Ingresa tu " }}{{ field.label|lower }}
+                        {% endif %}
+
+                        {% if field.errors %}
+                        <div class="text-danger small">
+                            {{ field.errors|join:", " }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+
+
+                <!-- Form button -->
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary w-100">📝 Registrarse</button>
+                </div>
+            </form>
+
+            <!-- Link to login -->
+            <div class="text-center mt-3">
+                <p>¿Ya tienes cuenta?
+                    <a href="{% url 'login' %}" class="text-primary fw-bold">Inicia sesión aquí</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -6,6 +6,10 @@ from django.shortcuts import render
 from django.http import JsonResponse
 import json
 
+from django.contrib.auth.forms import UserCreationForm
+from django.urls import reverse_lazy
+from django.views.generic.edit import CreateView
+
 def home_view(request):
     endpoints = [
         {"name": "Películas", "url": "/movies"},
@@ -14,6 +18,18 @@ def home_view(request):
         {"name": "Accede al frontend anterior", "url": "/movies/old"}
     ]
     return render(request, "home.html", {"endpoints": endpoints})
+
+class RegisterView(CreateView):
+    form_class = UserCreationForm
+    template_name = "registration/register.html"
+    success_url = reverse_lazy("home")
+
+    def form_valid(self, form):
+        """Guarda el usuario y lo autentica automáticamente"""
+        response = super().form_valid(form)
+        user = form.save()
+        login(self.request, user)
+        return response
 
 @csrf_exempt
 def login_view(request):

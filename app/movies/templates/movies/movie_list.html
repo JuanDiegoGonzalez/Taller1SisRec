@@ -94,7 +94,11 @@
         </ul>
     </nav>    
     {% else %}
-    <p class="text-center text-muted">No hay películas en la base de datos.</p>
+    {% if filter_rated %}
+    <p class="text-center text-muted">No has calificado ninguna película.</p>
+    {% else %}
+    <p class="text-center text-muted">No hay resultados para la búsqueda.</p>
+    {% endif %}
     {% endif %}
 </div>
 
