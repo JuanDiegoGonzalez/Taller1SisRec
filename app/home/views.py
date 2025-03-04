@@ -2,8 +2,18 @@ from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
+from django.shortcuts import render
 from django.http import JsonResponse
 import json
+
+def home_view(request):
+    endpoints = [
+        {"name": "Películas", "url": "/movies"},
+        {"name": "Búsqueda de una película (search: Love)", "url": "/movies?search=Love"},
+        {"name": "Detalle de una película (id: 1)", "url": "/movies/1"},
+        {"name": "Accede al frontend anterior", "url": "/movies/old"}
+    ]
+    return render(request, "home.html", {"endpoints": endpoints})
 
 @csrf_exempt
 def login_view(request):
