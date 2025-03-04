@@ -37,6 +37,7 @@ class ModelView(View):
 
             # Start processing
             start_time = time.time()
+            # TODO
             print(modelo, tipo, k, int(data.get('user').get('username')))
             predicciones = proceso(modelo, tipo, k, int(data.get('user').get('username')))
             end_time = time.time()
@@ -73,6 +74,7 @@ class ModelOldCreateView(LoginRequiredMixin, CreateView):
         model.owner = request.user
 
         start_time = time.time()  # Start timer
+        # TODO
         predicciones = proceso(model.modelo, model.tipo, model.k, int(model.owner.username))
         end_time = time.time()  # End timer
         elapsed_time = end_time - start_time

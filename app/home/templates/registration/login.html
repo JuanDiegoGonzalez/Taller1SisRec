@@ -41,13 +41,19 @@
         </div>
         {% endfor %}
 
-
         <!-- Form buttons -->
         <div class="text-center">
           <button type="submit" class="btn btn-primary">🔓 Ingresar</button>
         </div>
         <input type="hidden" name="next" value="{{ next }}" />
       </form>
+
+      <!-- Link to register -->
+      <div class="text-center mt-3">
+        <p>¿No tienes una cuenta?
+          <a href="{% url 'register' %}" class="text-primary fw-bold">Regístrate aquí</a>
+        </p>
+      </div>
     </div>
   </div>
 </div>

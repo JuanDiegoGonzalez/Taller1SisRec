@@ -13,6 +13,7 @@ from django.http import JsonResponse
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from .models import MovieRating
 
 #-------------------------------------
 # Nuevos endpoints
@@ -29,10 +30,21 @@ class ModelMoviesView(View):
                                                 'Fantasy','Film-Noir','Horror','Musical','Mystery','Romance','Sci-Fi','Thriller','War','Western'], encoding='latin-1' )
 
         if request.user.is_authenticated:
-            ratings=pd.read_csv('../Dataset 100k/u.data', engine ='python', sep = '\t', names = ['user_id', 'movie_id', 'rating', 'timestamp'])
-            
-            user_id = int(request.user.username)
-            user_ratings = ratings[ratings["user_id"] == user_id][["movie_id", "rating"]]
+            # Si el usuario está en el dataframe
+            try:
+                user_id = int(request.user.username)
+
+                ratings=pd.read_csv('../Dataset 100k/u.data', engine ='python', sep = '\t', names = ['user_id', 'movie_id', 'rating', 'timestamp'])
+                user_ratings = ratings[ratings["user_id"] == user_id][["movie_id", "rating"]]
+            # Si es un nuevo usuario
+            except:
+                ratings = MovieRating.objects.filter(user=request.user).values('movie_id', 'rating')
+                if ratings.exists():
+                    user_ratings = pd.DataFrame(list(ratings))
+                else:
+                    user_ratings = pd.DataFrame(columns=['movie_id', 'rating'])
+                user_ratings.insert(0, 'user_id', request.user.username)
+                print(user_ratings)
 
             items = items.merge(user_ratings, on="movie_id", how="left")
             items["rating"].fillna(0, inplace=True)
@@ -85,13 +97,10 @@ class MovieDetailView(View):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def rate_movie(request, movie_id, rating):
-    user = request.user  # Usuario autenticado
+    user = request.user
 
-    # Aquí debes guardar la calificación en la base de datos
     print(f'Usuario {user} calificó la película {movie_id} con {rating} estrellas.')
-
-    # Ejemplo con un modelo MovieRating
-    # MovieRating.objects.update_or_create(user=user, movie_id=movie_id, defaults={'rating': rating})
+    MovieRating.objects.update_or_create(user=user, movie_id=movie_id, defaults={'rating': rating})
 
     return Response({'message': 'Calificación registrada con éxito'}, status=200)
 
@@ -110,10 +119,21 @@ class ModelOldMoviesView(View):
                                                 'Fantasy','Film-Noir','Horror','Musical','Mystery','Romance','Sci-Fi','Thriller','War','Western'], encoding='latin-1' )
 
         if request.user.is_authenticated:
-            ratings=pd.read_csv('../Dataset 100k/u.data', engine ='python', sep = '\t', names = ['user_id', 'movie_id', 'rating', 'timestamp'])
-            
-            user_id = int(request.user.username)
-            user_ratings = ratings[ratings["user_id"] == user_id][["movie_id", "rating"]]
+            # Si el usuario está en el dataframe
+            try:
+                user_id = int(request.user.username)
+
+                ratings=pd.read_csv('../Dataset 100k/u.data', engine ='python', sep = '\t', names = ['user_id', 'movie_id', 'rating', 'timestamp'])
+                user_ratings = ratings[ratings["user_id"] == user_id][["movie_id", "rating"]]
+            # Si es un nuevo usuario
+            except:
+                ratings = MovieRating.objects.filter(user=request.user).values('movie_id', 'rating')
+                if ratings.exists():
+                    user_ratings = pd.DataFrame(list(ratings))
+                else:
+                    user_ratings = pd.DataFrame(columns=['movie_id', 'rating'])
+                user_ratings.insert(0, 'user_id', request.user.username)
+                print(user_ratings)
 
             items = items.merge(user_ratings, on="movie_id", how="left")
             items["rating"].fillna(0, inplace=True)
