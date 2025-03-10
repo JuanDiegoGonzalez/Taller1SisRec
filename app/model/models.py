@@ -5,6 +5,7 @@ class Model(models.Model) :
     MODELO_CHOICES = [
         ("Coseno", "Coseno"),
         ("Pearson", "Pearson"),
+        ("Jaccard", "Jaccard")
     ]
 
     TIPO_CHOICES = [

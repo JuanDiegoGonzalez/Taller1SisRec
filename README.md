@@ -1,13 +1,15 @@
 # Taller 1 Sistemas de Recomendación - Grupo 04
 
 ## Integrantes
-- Daniel Esteban Aguilera Figueroa	
-- Angel Abel Arismendy Contreras	
-- Daniela Alejandra Camacho Molano	
-- Jairo Alberto Garavito Correa	
-- Juan Diego Gonzalez Gomez	
+
+- Daniel Esteban Aguilera Figueroa
+- Angel Abel Arismendy Contreras
+- Daniela Alejandra Camacho Molano
+- Jairo Alberto Garavito Correa
+- Juan Diego Gonzalez Gomez
 
 ## Versión recomendada de Python
+
 Python 3.12.9
 
 ## Pasos para Ejecutar la Aplicación

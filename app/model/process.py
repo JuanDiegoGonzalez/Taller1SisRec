@@ -22,7 +22,7 @@ def proceso(p_model_name, p_user_based, k, id_usuario):
         case _:
             user_based = False
 
-    #Para garantizar reproducibilidad en resultados
+    # Para garantizar reproducibilidad en resultados
     seed = 10
     random.seed(seed)
     np.random.seed(seed)
