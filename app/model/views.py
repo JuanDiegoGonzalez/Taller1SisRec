@@ -8,7 +8,7 @@ from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from model.forms import CreateForm
-from model.process import proceso
+from model.process import predict
 
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
@@ -39,7 +39,7 @@ class ModelView(View):
             start_time = time.time()
             # TODO
             print(modelo, tipo, k, int(data.get('user').get('username')))
-            predicciones = proceso(modelo, tipo, k, int(data.get('user').get('username')))
+            predicciones = predict(modelo, tipo, k, int(data.get('user').get('username')))
             end_time = time.time()
             elapsed_time = end_time - start_time
             print(f"Elapsed time: {elapsed_time:.4f} seconds")
@@ -75,11 +75,11 @@ class ModelOldCreateView(LoginRequiredMixin, CreateView):
 
         start_time = time.time()  # Start timer
         # TODO
-        predicciones = proceso(model.modelo, model.tipo, model.k, int(model.owner.username))
+        predicciones = predict(model.modelo, model.tipo, model.k, int(model.owner.username))
         end_time = time.time()  # End timer
         elapsed_time = end_time - start_time
         print(f"Elapsed time: {elapsed_time:.4f} seconds")
-        
+
         predicciones_json = predicciones.to_dict(orient='records')
 
         request.session['predicciones'] = predicciones_json

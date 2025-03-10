@@ -26,13 +26,13 @@ def compute_jaccard_similarity(trainset, user_based=True):
 
     return interaction_matrix
 
-def train_user_user(k, save_path="user_user_model.joblib"):
+def train_user_user(k, save_path="./models/pipelines/user_user_model.joblib"):
     """
     Train a User-User collaborative filtering model using Jaccard, Cosine, and Pearson similarities.
     """
     train_pipeline(True, k, save_path)
 
-def train_item_item(k, save_path="item_item_model.joblib"):
+def train_item_item(k, save_path="./models/pipelines/item_item_model.joblib"):
     """
     Train an Item-Item collaborative filtering model using Jaccard, Cosine, and Pearson similarities.
     """
@@ -78,28 +78,36 @@ def predict(model_path, id_usuario, k, similarity):
     Load a trained model and predict top-K recommendations for a user using a selected similarity metric.
     """
     models = joblib.load(model_path)
-
-    if similarity == "jaccard":
-        similarity_matrix = models.get("jaccard")
-        if similarity_matrix is None:
-            raise ValueError("Jaccard similarity model not found.")
-
-        # Find k-nearest users or items
-        nearest_neighbors = np.argsort(similarity_matrix[id_usuario])[-k:]
-        return nearest_neighbors
-
     model = models.get(similarity)
+
     if model is None:
         raise ValueError(f"Invalid similarity metric: {similarity}")
 
     # Load dataset
     ratings = pd.read_csv('./Dataset 100k/u.data', engine='python', sep='\t',
-                          names=['user_id', 'item_id', 'rating', 'timestamp'])
+                            names=['user_id', 'item_id', 'rating', 'timestamp'])
     items = pd.read_csv('./Dataset 100k/u.item', engine='python', sep='\|',
                         names=['movie id', 'movie title', 'release date', 'video release date', 'IMDb URL ', 'unknown',
-                               'Action', 'Adventure', 'Animation', 'Children', 'Comedy', 'Crime', 'Documentary', 'Drama',
-                               'Fantasy', 'Film-Noir', 'Horror', 'Musical', 'Mystery', 'Romance', 'Sci-Fi', 'Thriller', 'War', 'Western'],
+                                'Action', 'Adventure', 'Animation', 'Children', 'Comedy', 'Crime', 'Documentary', 'Drama',
+                                'Fantasy', 'Film-Noir', 'Horror', 'Musical', 'Mystery', 'Romance', 'Sci-Fi', 'Thriller', 'War', 'Western'],
                         encoding='latin-1')
+
+    if similarity == "jaccard":
+        # Find k-nearest users or items
+        nearest_neighbors = np.argsort(model[id_usuario])[-k:]
+
+        # Convert to DataFrame
+        df_predictions = pd.DataFrame({'movie id': nearest_neighbors})
+        df_predictions = df_predictions.merge(items[['movie id', 'movie title', 'IMDb URL ']], on='movie id', how='left')
+
+        df_predictions.rename(columns={
+            "movie id": "movie_id",
+            "movie title": "movie_title",
+            "IMDb URL ": "imdb_url"
+        }, inplace=True)
+
+        print(df_predictions, end="\n\n")
+        return df_predictions
     
     reader = Reader(rating_scale=(1, 5))
     surprise_dataset = Dataset.load_from_df(ratings[['user_id', 'item_id', 'rating']], reader)
@@ -127,6 +135,6 @@ def predict(model_path, id_usuario, k, similarity):
     return df_predictions
 
 if __name__ == "__main__":
-    k = 10  # Number of neighbors
+    k = 20  # Number of neighbors
     train_user_user(k)
     train_item_item(k)
