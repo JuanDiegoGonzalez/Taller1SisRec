@@ -140,3 +140,6 @@ dmypy.json
 
 # Other
 .DS_Store
+
+# Large csv
+/models/data
