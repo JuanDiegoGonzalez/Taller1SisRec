@@ -5,6 +5,7 @@ from . import views
 app_name='model'
 urlpatterns = [
     path('', views.ModelView.as_view(), name='model_create'),
+    path("predict", views.ModelPredictView.as_view(), name="predict"),
     path("train-model", views.ModelTrainView.as_view(), name="train_model"),
     path('old', views.ModelOldCreateView.as_view(), name='model_create'),
     path('old/result', views.ModelOldResultView.as_view(), name='model_result'),

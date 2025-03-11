@@ -10,6 +10,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from apps.model.forms import CreateForm
 from apps.model.process import predict
 from apps.movie_rating.models import MovieRating
+from apps.movie.models import Movie
+from django.contrib.auth.models import User
 
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
@@ -68,7 +70,9 @@ class ModelTrainView(View):
         num_entities = trainset.n_users if user_based else trainset.n_items
         interaction_matrix = np.zeros((num_entities, num_entities))
 
+        print("Jaccard - Model " + str(num_entities))
         for u in range(num_entities):
+            print(u)
             for v in range(num_entities):
                 if u != v:
                     set_u = set(trainset.ur[u]) if user_based else set(trainset.ir[u])
@@ -94,8 +98,10 @@ class ModelTrainView(View):
         random.seed(seed)
         np.random.seed(seed)
 
+        recent_users = User.objects.order_by("-date_joined").values_list("id", flat=True)[:20000]
+
         # Load dataset
-        ratings_qs = MovieRating.objects.values("user_id", "movie_id", "rating")  # Fetch relevant fields
+        ratings_qs = MovieRating.objects.filter(user_id__in=recent_users).values("user_id", "movie_id", "rating")
         ratings = pd.DataFrame(list(ratings_qs))
 
         if ratings.empty:
@@ -125,13 +131,13 @@ class ModelTrainView(View):
         joblib.dump(models, save_path)
         print(f"Model {save_path} saved successfully!")
 
-    def train_user_user(self, k, save_path="./models/new/pipelines/user_user_model.joblib"):
+    def train_user_user(self, k, save_path="./models/pipelines/new/user_user_model.joblib"):
         """
         Train a User-User collaborative filtering model using Jaccard, Cosine, and Pearson similarities.
         """
         self.train_pipeline(True, k, save_path)
 
-    def train_item_item(self, k, save_path="./models/new/pipelines/item_item_model.joblib"):
+    def train_item_item(self, k, save_path="./models/pipelines/new/item_item_model.joblib"):
         """
         Train an Item-Item collaborative filtering model using Jaccard, Cosine, and Pearson similarities.
         """
@@ -150,6 +156,106 @@ class ModelTrainView(View):
             start_time = time.time()
             self.train_user_user(20)
             self.train_item_item(20)
+            end_time = time.time()
+            elapsed_time = end_time - start_time
+            print(f"Elapsed time: {elapsed_time:.4f} seconds")
+
+
+            return JsonResponse({"Success": "Trained model succesfully"}, safe=False)
+
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON"}, status=400)
+
+@method_decorator(csrf_exempt, name="dispatch")
+class ModelPredictView(View):
+
+    def predict(self, p_model_name, p_user_based, k, id_usuario):
+        """
+        Load a trained model and predict top-K recommendations for a user using a selected similarity metric.
+        """
+        match p_model_name:
+            case "Jaccard":
+                similarity = "jaccard"
+            case "Coseno":
+                similarity = "cosine"
+            case "Pearson":
+                similarity = "pearson"
+
+        match p_user_based:
+            case "Usuario-Usuario":
+                model_path = "./models/pipelines/new/user_user_model.joblib"
+            case _:
+                model_path = "./models/pipelines/new/item_item_model.joblib"
+
+        models = joblib.load(model_path)
+        model = models.get(similarity)
+
+        if model is None:
+            raise ValueError(f"Invalid similarity metric: {similarity}")
+
+        # Load dataset
+
+        ratings_qs = MovieRating.objects.values("user_id", "movie_id", "rating")
+        ratings = pd.DataFrame(list(ratings_qs))
+
+        # Rename columns to match Surprise format
+        ratings.rename(columns={"movie_id": "item_id"}, inplace=True)
+
+        items = Movie.objects.values("id", "title", "image_url", "avg_rating")
+
+        if similarity == "jaccard":
+            # Find k-nearest users or items
+            nearest_neighbors = np.argsort(model[id_usuario])[-k:]
+
+            # Convert to DataFrame
+            df_predictions = pd.DataFrame({'id': nearest_neighbors})
+            df_predictions = df_predictions.merge(items[["id", "title", "image_url", "avg_rating"]], on='id', how='left')
+
+            print(df_predictions, end="\n\n")
+            return df_predictions
+
+        reader = Reader(rating_scale=(1, 5))
+        surprise_dataset = Dataset.load_from_df(ratings[['user_id', 'item_id', 'rating']], reader)
+        trainset = surprise_dataset.build_full_trainset()
+        test = trainset.build_anti_testset()
+
+        # Generate predictions
+        predictions = model.test(test)
+        user_predictions = list(filter(lambda x: x[0] == id_usuario, predictions))
+        user_predictions.sort(key=lambda x: x.est, reverse=True)
+        top_k = user_predictions[:k]
+
+        # Convert to DataFrame
+        labels = ['id', 'estimation']
+        df_predictions = pd.DataFrame.from_records(list(map(lambda x: (x.iid, x.est), top_k)), columns=labels)
+        df_predictions = df_predictions.merge(items[["id", "title", "image_url", "avg_rating"]], on='id', how='left')
+
+        print(df_predictions, end="\n\n")
+        return df_predictions
+
+
+    """
+    Requests
+    """
+    def get(self, _):
+        return JsonResponse({"error": "Only POST allowed"}, status=405)
+
+    def post(self, request):
+        try:
+
+            data = json.loads(request.body)  # Get JSON data from request
+            modelo = data.get('modelo')
+            tipo = data.get('tipo')
+            k = data.get('k')
+            id_usuario = data.get('userId')
+
+            if not modelo or not tipo or k is None:
+                return JsonResponse({"error": "Missing required fields"}, status=400)
+
+            print(data)
+            # Start processing
+            start_time = time.time()
+            self.predict(modelo, tipo, k, id_usuario)
             end_time = time.time()
             elapsed_time = end_time - start_time
             print(f"Elapsed time: {elapsed_time:.4f} seconds")
