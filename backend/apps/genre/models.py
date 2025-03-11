@@ -3,7 +3,6 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from apps.movie.models import Movie
 
 class Genre(models.Model):
-    genre_id = models.IntegerField()
     name = models.CharField(max_length=255)
     movies = models.ManyToManyField(Movie)
 
