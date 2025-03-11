@@ -5,7 +5,6 @@ from surprise import Dataset
 from surprise.model_selection import train_test_split
 from surprise import KNNBasic
 from surprise import accuracy
-import random
 import joblib
 
 def predict(p_model_name, p_user_based, k, id_usuario):
