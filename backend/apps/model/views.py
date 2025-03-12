@@ -80,6 +80,8 @@ class ModelTrainView(View):
         num_users = trainset.n_users
         num_items = trainset.n_items
 
+        user_id_mapping = {trainset.to_raw_uid(i): i for i in trainset.all_users()}
+
         rows, cols, data = [], [], []
         for uid, iid, _ in trainset.all_ratings():
             rows.append(uid if user_based else iid)  # Users as rows if user-based, otherwise items
@@ -104,8 +106,8 @@ class ModelTrainView(View):
 
         # Ensure diagonal is 1 (self-similarity)
         np.fill_diagonal(jaccard_sim, 1.0)
-        print(f"🔹 Jaccard similarity matrix (dense) shape: {jaccard_sim.shape}")
-        return jaccard_sim
+        print(f"Jaccard similarity matrix (dense) shape: {jaccard_sim.shape}")
+        return jaccard_sim, user_id_mapping
 
     def train_pipeline(self, user_based, k, save_path):
         """
@@ -135,17 +137,19 @@ class ModelTrainView(View):
 
         # Train models for each similarity metric
         trainset = surprise_dataset.build_full_trainset()
-        for model_name in similarities:
-            sim_options = {'name': model_name, 'user_based': user_based}
-            print(sim_options)
-            algo = KNNBasic(k=k, min_k=2, sim_options=sim_options)
-            algo.fit(trainset)
-            models[model_name] = algo
+        # for model_name in similarities:
+        #     sim_options = {'name': model_name, 'user_based': user_based}
+        #     print(sim_options)
+        #     algo = KNNBasic(k=k, min_k=2, sim_options=sim_options)
+        #     algo.fit(trainset)
+        #     models[model_name] = algo
 
         # Compute Jaccard manually
         print({'name': "Jaccard", 'user_based': user_based})
-        jaccard_matrix = self.compute_jaccard_similarity(trainset, user_based)
-        models['jaccard'] = jaccard_matrix
+
+        # Compute Jaccard with ID mapping
+        jaccard_matrix, user_id_mapping = self.compute_jaccard_similarity(trainset, user_based)
+        models['jaccard'] = {"matrix": jaccard_matrix, "id_map": user_id_mapping}
 
         # Save models
         joblib.dump(models, save_path)
@@ -220,26 +224,47 @@ class ModelPredictView(View):
 
         # Rename columns to match Surprise format
         ratings.rename(columns={"movie_id": "item_id"}, inplace=True)
-
         items_df = pd.DataFrame(list(Movie.objects.values("id", "title", "image_url", "avg_rating")))
 
+        reader = Reader(rating_scale=(1, 5))
+        surprise_dataset = Dataset.load_from_df(ratings[['user_id', 'item_id', 'rating']], reader)
+        trainset = surprise_dataset.build_full_trainset()
+
         if similarity == "jaccard":
-            # Find k-nearest users or items
-            nearest_neighbors = np.argsort(model[id_usuario])[-k:]
-            # Convert to DataFrame
+            jaccard_matrix = model["matrix"]
+            user_id_mapping = model["id_map"]
+
+            # Ensure user exists
+            if id_usuario not in user_id_mapping:
+                raise ValueError(f"User {id_usuario} not found in training data.")
+
+            # Get inner ID
+            inner_id = user_id_mapping[id_usuario]
+
+            # Find k-nearest users/items
+            nearest_neighbors = np.argsort(jaccard_matrix[inner_id])[-k:]
+
             df_predictions = pd.DataFrame({'id': nearest_neighbors})
+            items_df = pd.DataFrame(list(Movie.objects.values("id", "title", "image_url", "avg_rating")))
             df_predictions = df_predictions.merge(items_df[["id", "title", "image_url", "avg_rating"]], on='id', how='left')
 
             print(df_predictions, end="\n\n")
             return df_predictions
 
-        reader = Reader(rating_scale=(1, 5))
-        surprise_dataset = Dataset.load_from_df(ratings[['user_id', 'item_id', 'rating']], reader)
-        trainset = surprise_dataset.build_full_trainset()
-        test = trainset.build_anti_testset()
+        # Get items rated by the user
+        user_rated_items = set(trainset.ur[trainset.to_inner_uid(id_usuario)])
+
+        # Get all items in the dataset
+        all_items = set(trainset.all_items())
+
+        # Find items not rated by user
+        unrated_items = list(all_items - user_rated_items)
+
+        # Create test set for only the unrated items of the user
+        user_test_set = [(id_usuario, trainset.to_raw_iid(item_id), 0) for item_id in unrated_items]
 
         # Generate predictions
-        predictions = model.test(test)
+        predictions = model.test(user_test_set)
         user_predictions = list(filter(lambda x: x[0] == id_usuario, predictions))
         user_predictions.sort(key=lambda x: x.est, reverse=True)
         top_k = user_predictions[:k]
