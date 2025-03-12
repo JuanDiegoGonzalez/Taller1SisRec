@@ -17,6 +17,8 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 
 from surprise import Reader, Dataset, KNNBasic
+from scipy.sparse import csr_matrix
+from sklearn.metrics.pairwise import pairwise_distances
 
 import time, json, joblib, random
 
@@ -65,26 +67,45 @@ class ModelTrainView(View):
 
     def compute_jaccard_similarity(self, trainset, user_based=True):
         """
-        Compute Jaccard similarity for users or items.
+        Compute Jaccard similarity efficiently using sparse matrices.
+
+        Args:
+            trainset (surprise.Trainset): The training set from Surprise.
+            user_based (bool): Whether to compute user-user or item-item similarity.
+
+        Returns:
+            np.ndarray: Jaccard similarity matrix.
         """
-        num_entities = trainset.n_users if user_based else trainset.n_items
-        interaction_matrix = np.zeros((num_entities, num_entities))
 
-        print("Jaccard - Model " + str(num_entities))
-        for u in range(num_entities):
-            print(u)
-            for v in range(num_entities):
-                if u != v:
-                    set_u = set(trainset.ur[u]) if user_based else set(trainset.ir[u])
-                    set_v = set(trainset.ur[v]) if user_based else set(trainset.ir[v])
+        num_users = trainset.n_users
+        num_items = trainset.n_items
 
-                    intersection = len(set_u & set_v)
-                    union = len(set_u | set_v)
+        rows, cols, data = [], [], []
+        for uid, iid, _ in trainset.all_ratings():
+            rows.append(uid if user_based else iid)  # Users as rows if user-based, otherwise items
+            cols.append(iid if user_based else uid)  # Items as columns if user-based, otherwise users
+            data.append(1)  # Binary presence (1 means interaction exists)
 
-                    similarity = intersection / union if union != 0 else 0
-                    interaction_matrix[u, v] = similarity
+        # Create sparse binary interaction matrix
+        shape = (num_users, num_items) if user_based else (num_items, num_users)
+        interaction_matrix = csr_matrix((data, (rows, cols)), shape=shape)
 
-        return interaction_matrix
+        # Compute Jaccard similarity manually
+        intersection = interaction_matrix @ interaction_matrix.T  # Count co-occurrences
+        row_sums = interaction_matrix.sum(axis=1)  # Total interactions per user/item
+        union = row_sums + row_sums.T - intersection  # Union size
+
+        # Avoid division by zero (replace 0s in the denominator with 1)
+        union[union == 0] = 1
+        jaccard_sim = intersection / union  # Compute Jaccard index
+
+        # Convert to dense NumPy array
+        jaccard_sim = jaccard_sim.toarray()
+
+        # Ensure diagonal is 1 (self-similarity)
+        np.fill_diagonal(jaccard_sim, 1.0)
+        print(f"🔹 Jaccard similarity matrix (dense) shape: {jaccard_sim.shape}")
+        return jaccard_sim
 
     def train_pipeline(self, user_based, k, save_path):
         """
@@ -98,10 +119,8 @@ class ModelTrainView(View):
         random.seed(seed)
         np.random.seed(seed)
 
-        recent_users = User.objects.order_by("-date_joined").values_list("id", flat=True)[:20000]
-
         # Load dataset
-        ratings_qs = MovieRating.objects.filter(user_id__in=recent_users).values("user_id", "movie_id", "rating")
+        ratings_qs = MovieRating.objects.values("user_id", "movie_id", "rating")
         ratings = pd.DataFrame(list(ratings_qs))
 
         if ratings.empty:
@@ -124,6 +143,7 @@ class ModelTrainView(View):
             models[model_name] = algo
 
         # Compute Jaccard manually
+        print({'name': "Jaccard", 'user_based': user_based})
         jaccard_matrix = self.compute_jaccard_similarity(trainset, user_based)
         models['jaccard'] = jaccard_matrix
 
@@ -201,15 +221,14 @@ class ModelPredictView(View):
         # Rename columns to match Surprise format
         ratings.rename(columns={"movie_id": "item_id"}, inplace=True)
 
-        items = Movie.objects.values("id", "title", "image_url", "avg_rating")
+        items_df = pd.DataFrame(list(Movie.objects.values("id", "title", "image_url", "avg_rating")))
 
         if similarity == "jaccard":
             # Find k-nearest users or items
             nearest_neighbors = np.argsort(model[id_usuario])[-k:]
-
             # Convert to DataFrame
             df_predictions = pd.DataFrame({'id': nearest_neighbors})
-            df_predictions = df_predictions.merge(items[["id", "title", "image_url", "avg_rating"]], on='id', how='left')
+            df_predictions = df_predictions.merge(items_df[["id", "title", "image_url", "avg_rating"]], on='id', how='left')
 
             print(df_predictions, end="\n\n")
             return df_predictions
@@ -228,7 +247,7 @@ class ModelPredictView(View):
         # Convert to DataFrame
         labels = ['id', 'estimation']
         df_predictions = pd.DataFrame.from_records(list(map(lambda x: (x.iid, x.est), top_k)), columns=labels)
-        df_predictions = df_predictions.merge(items[["id", "title", "image_url", "avg_rating"]], on='id', how='left')
+        df_predictions = df_predictions.merge(items_df[["id", "title", "image_url", "avg_rating"]], on='id', how='left')
 
         print(df_predictions, end="\n\n")
         return df_predictions
@@ -255,13 +274,13 @@ class ModelPredictView(View):
             print(data)
             # Start processing
             start_time = time.time()
-            self.predict(modelo, tipo, k, id_usuario)
+            predictions = self.predict(modelo, tipo, k, id_usuario)
             end_time = time.time()
             elapsed_time = end_time - start_time
             print(f"Elapsed time: {elapsed_time:.4f} seconds")
+            predictions_json = predictions.to_dict(orient='records')
 
-
-            return JsonResponse({"Success": "Trained model succesfully"}, safe=False)
+            return JsonResponse(predictions_json, safe=False)
 
         except json.JSONDecodeError:
             return JsonResponse({"error": "Invalid JSON"}, status=400)
