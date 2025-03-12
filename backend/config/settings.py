@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'crispy_bootstrap5',  
     'rest_framework',
     'widget_tweaks',
+    'corsheaders',
 
     # Local Apps
     'apps.home.apps.HomeConfig',
@@ -65,6 +66,7 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -172,3 +174,6 @@ AUTHENTICATION_BACKENDS = [
     'apps.home.auth_backends.PlainTextPasswordBackend',  # Custom backend for plaintext passwords
     'django.contrib.auth.backends.ModelBackend',  # Default Django backend
 ]
+
+CORS_ALLOW_ALL_ORIGINS = True  # Only for development!
+CORS_ALLOW_CREDENTIALS = True
