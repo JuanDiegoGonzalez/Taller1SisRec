@@ -1,9 +1,10 @@
 {
 	"info": {
-		"_postman_id": "3e87e9d8-cad6-48d2-b660-b132b930b0d6",
+		"_postman_id": "85eb9fbe-f3c8-4b89-9832-c2481897fe13",
 		"name": "Enpoints Taller 1 Sisrec",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "12464767"
+		"_exporter_id": "19952432",
+		"_collection_link": "https://blue-resonance-771640.postman.co/workspace/EETI-KMC~2ea68b57-ebba-4f1f-8f7e-9257daa73999/collection/19952432-85eb9fbe-f3c8-4b89-9832-c2481897fe13?action=share&source=collection_link&creator=19952432"
 	},
 	"item": [
 		{
@@ -93,6 +94,60 @@
 					"path": [
 						"model",
 						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Model Train",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{backend}}/model/train-model",
+					"host": [
+						"{{backend}}"
+					],
+					"path": [
+						"model",
+						"train-model"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Model Predict",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"modelo\": \"Pearson\",\r\n    \"tipo\": \"Usuario-Usuario\",\r\n    \"k\": 20,\r\n    \"userId\": 1\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{backend}}/model/predict",
+					"host": [
+						"{{backend}}"
+					],
+					"path": [
+						"model",
+						"predict"
 					]
 				}
 			},
