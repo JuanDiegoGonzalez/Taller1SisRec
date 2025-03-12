@@ -137,12 +137,12 @@ class ModelTrainView(View):
 
         # Train models for each similarity metric
         trainset = surprise_dataset.build_full_trainset()
-        # for model_name in similarities:
-        #     sim_options = {'name': model_name, 'user_based': user_based}
-        #     print(sim_options)
-        #     algo = KNNBasic(k=k, min_k=2, sim_options=sim_options)
-        #     algo.fit(trainset)
-        #     models[model_name] = algo
+        for model_name in similarities:
+            sim_options = {'name': model_name, 'user_based': user_based}
+            print(sim_options)
+            algo = KNNBasic(k=k, min_k=2, sim_options=sim_options)
+            algo.fit(trainset)
+            models[model_name] = algo
 
         # Compute Jaccard manually
         print({'name': "Jaccard", 'user_based': user_based})
