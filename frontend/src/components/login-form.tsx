@@ -52,7 +52,7 @@ export function LoginForm({
       if (!response.ok) {
         const errorData = await response.text();
         console.error('Login error:', errorData); // Debug log
-        throw new Error(`Error al iniciar sesión: ${errorData}`);
+        throw new Error(`Error al iniciar sesión: ${JSON.parse(errorData).error}`);
       }
 
       return response.json() as Promise<LoginResponse>
