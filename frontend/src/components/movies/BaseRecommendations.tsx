@@ -14,13 +14,31 @@ interface Movie {
 
 type PredictionResponse = Movie[]
 
-export function RecommendedMovies() {
+interface BaseRecommendationsProps {
+    title: string
+    description: string
+    queryKey: string
+    tipo: "Usuario-Usuario" | "Item-Item"
+    k: number
+    showViewAll?: boolean
+    viewAllPath?: string
+}
+
+export function BaseRecommendations({ 
+    title, 
+    description, 
+    queryKey, 
+    tipo, 
+    k,
+    showViewAll = false,
+    viewAllPath
+}: BaseRecommendationsProps) {
     const userId = localStorage.getItem("username")
     const backendUrl = import.meta.env.VITE_BACKEND_URL
     const navigate = useNavigate()
 
     const { data, isLoading, error } = useQuery({
-        queryKey: ["recommendations", userId],
+        queryKey: [queryKey, userId, k],
         queryFn: async (): Promise<PredictionResponse> => {
             const response = await fetch(`${backendUrl}/model/predict`, {
                 method: "POST",
@@ -29,8 +47,8 @@ export function RecommendedMovies() {
                 },
                 body: JSON.stringify({
                     modelo: "Pearson",
-                    tipo: "Usuario-Usuario",
-                    k: 4,
+                    tipo,
+                    k,
                     userId: Number(userId)
                 })
             })
@@ -54,19 +72,21 @@ export function RecommendedMovies() {
         <section className="py-8">
             <div className="flex items-center justify-between mb-6">
                 <div>
-                    <h2 className="text-2xl font-semibold">Películas recomendadas para ti</h2>
-                    <p className="text-muted-foreground mt-2">Basado en usuarios con gustos similares a los tuyos</p>
+                    <h2 className="text-2xl font-semibold">{title}</h2>
+                    <p className="text-muted-foreground mt-2">{description}</p>
                 </div>
-                <Button 
-                    variant="outline" 
-                    onClick={() => navigate("/recommendations")}
-                >
-                    Ver todas las recomendaciones
-                </Button>
+                {showViewAll && viewAllPath && (
+                    <Button 
+                        variant="secondary" 
+                        onClick={() => navigate(viewAllPath)}
+                    >
+                        Ver todas las recomendaciones
+                    </Button>
+                )}
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {isLoading ? (
-                    Array.from({ length: 4 }).map((_, i) => (
+                    Array.from({ length: k }).map((_, i) => (
                         <div key={i} className="space-y-3">
                             <Skeleton className="h-[400px] w-full rounded-lg" />
                             <Skeleton className="h-4 w-3/4" />
