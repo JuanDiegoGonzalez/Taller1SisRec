@@ -66,7 +66,7 @@ export function MovieCard({ estimation, title, image_url, avg_rating }: MovieCar
             </div>           
             </HoverCardTrigger>
             <HoverCardContent>
-              <span className="text-sm">Calificación promedio: {avg_rating}/5</span>
+              <span className="text-sm">Calificación promedio: {avg_rating.toFixed(2)}/5</span>
             </HoverCardContent>
           </HoverCard>
         </CardDescription>
