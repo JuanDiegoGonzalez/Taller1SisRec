@@ -1,28 +1,24 @@
-import { Button } from "@/components/ui/button"
 import { ThemeProvider } from "@/components/theme-provider"
-import { ModeToggle } from "@/components/mode-toggle"
-import { useNavigate } from "react-router"
-
+import { Route, Routes, BrowserRouter } from "react-router"
+import { ProtectedRoute } from "./components/protected-route"
+import Home from "./pages/home"
+import Login from "./pages/login"
 function App() {
-  const navigate = useNavigate()
-  const username = localStorage.getItem("username")
-
-  const handleLogout = () => {
-    localStorage.removeItem("username")
-    navigate("/login")
-  }
-
   return (
     <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
-      <div className="flex flex-col items-center justify-center min-h-svh">
-        <div className="flex items-center gap-4 mb-8">
-          <h1 className="text-2xl font-bold">Bienvenido, {username}!</h1>
-          <Button variant="outline" onClick={handleLogout}>
-            Cerrar sesión
-          </Button>
-          <ModeToggle />
-        </div>
-      </div>
+      <BrowserRouter>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <Home />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/login" element={<Login />} />
+        </Routes>
+      </BrowserRouter>
     </ThemeProvider>
   )
 }
