@@ -114,6 +114,32 @@ class MovieRateView(View):
 
             return JsonResponse({"error": "Invalid JSON"}, status=400)
 
+@method_decorator(csrf_exempt, name="dispatch")
+class MovieUserRatingView(View):
+    def get(self, request):
+        try:
+            data = json.loads(request.body)
+            user_id = data.get("user_id")
+            user_ratings = MovieRating.objects.filter(user_id=user_id).select_related('movie')
+
+            if not user_ratings.exists():
+                return JsonResponse({"error": f"No movies found for user {user_id}"}, status=404)
+
+            movies_info = [
+                {
+                    "id": rating.movie.id,
+                    "title": rating.movie.title,
+                    "image_url": rating.movie.image_url,
+                    "user_rating": rating.rating
+                }
+                for rating in user_ratings
+            ]
+
+            return JsonResponse({"user_id": user_id, "movies": movies_info}, safe=False)
+
+        except json.JSONDecodeError:
+
+            return JsonResponse({"error": "Invalid JSON"}, status=400)
 
 #-------------------------------------
 # Anteriores endpoints
