@@ -11,14 +11,12 @@ from apps.model.forms import CreateForm
 from apps.model.process import predict
 from apps.movie_rating.models import MovieRating
 from apps.movie.models import Movie
-from django.contrib.auth.models import User
 
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 
 from surprise import Reader, Dataset, KNNBasic
 from scipy.sparse import csr_matrix
-from sklearn.metrics.pairwise import pairwise_distances
 
 import time, json, joblib, random
 
@@ -244,9 +242,25 @@ class ModelPredictView(View):
             # Find k-nearest users/items
             nearest_neighbors = np.argsort(jaccard_matrix[inner_id])[-k:]
 
-            df_predictions = pd.DataFrame({'id': nearest_neighbors})
+            # Get Jaccard similarity scores for nearest neighbors
+            similarity_scores = jaccard_matrix[inner_id, nearest_neighbors]
+
+            df_predictions = pd.DataFrame({
+                'id': nearest_neighbors,
+                'jaccard_score': similarity_scores
+            })
+
+            # Merge with movie details
             items_df = pd.DataFrame(list(Movie.objects.values("id", "title", "image_url", "avg_rating")))
             df_predictions = df_predictions.merge(items_df[["id", "title", "image_url", "avg_rating"]], on='id', how='left')
+
+            # Generate explanation for recommendations
+            df_predictions["reason"] = df_predictions.apply(
+                lambda row: f"Recomendado porque su interacción es similar al {row['jaccard_score']:.2%} de usuarios similares."
+                if p_user_based == "Usuario-Usuario" else
+                f"Recomendado porque tiene un {row['jaccard_score']:.2%} de similitud con películas que has visto.",
+                axis=1
+            )
 
             print(df_predictions, end="\n\n")
             return df_predictions
@@ -270,9 +284,19 @@ class ModelPredictView(View):
         top_k = user_predictions[:k]
 
         # Convert to DataFrame
-        labels = ['id', 'estimation']
-        df_predictions = pd.DataFrame.from_records(list(map(lambda x: (x.iid, x.est), top_k)), columns=labels)
+        df_predictions = pd.DataFrame.from_records(
+            [(x.iid, x.est, x.details.get('actual_k', 0), x.details.get('was_impossible', False)) for x in top_k],
+            columns=['id', 'estimation', 'num_neighbors', 'was_impossible']
+        )
+
+        # Merge with movie details
         df_predictions = df_predictions.merge(items_df[["id", "title", "image_url", "avg_rating"]], on='id', how='left')
+
+        df_predictions["reason"] = df_predictions.apply(
+            lambda row: f"Recomendado en base a {row['num_neighbors']} {'usuarios' if p_user_based == 'Usuario-Usuario' else 'películas'} similares."
+            if not row["was_impossible"] else "No se encontraron suficientes vecinos para una predicción precisa.",
+            axis=1
+        )
 
         print(df_predictions, end="\n\n")
         return df_predictions
