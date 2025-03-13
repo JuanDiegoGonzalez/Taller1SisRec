@@ -143,3 +143,6 @@ dmypy.json
 
 # Large csv
 /models/data
+
+# joblib (heavy files)
+/models/pipelines/new
