@@ -1,7 +1,8 @@
 from django.urls import path
+from .views import ModelGenresView
 
 # http://127.0.0.1:8000/genre/...
 app_name='genre'
 urlpatterns = [
-    path('', views.ModelView.as_view(), name='model_create'),
+    path('movies/<int:genre_id>', ModelGenresView.as_view(), name='movies_genre'),
 ]

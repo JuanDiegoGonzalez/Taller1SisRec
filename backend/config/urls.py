@@ -22,6 +22,7 @@ from django.views.static import serve
 urlpatterns = [
     path('', include('apps.home.urls')),
     path('movies/', include('apps.movie_rating.urls')),
+    path('genre/', include('apps.genre.urls')),
     path('model/', include('apps.model.urls')),
     path('admin/', admin.site.urls),
     path('accounts/', include('django.contrib.auth.urls')),
