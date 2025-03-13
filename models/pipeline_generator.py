@@ -51,7 +51,7 @@ def train_pipeline(user_based, k, save_path):
     np.random.seed(seed)
     
     # Load dataset
-    ratings = pd.read_csv('./Dataset 100k/u.data', engine='python', sep='\t',
+    ratings = pd.read_csv('../Dataset 100k/u.data', engine='python', sep='\t',
                           names=['user_id', 'item_id', 'rating', 'timestamp'])
     
     reader = Reader(rating_scale=(1, 5))
@@ -84,9 +84,9 @@ def predict(model_path, id_usuario, k, similarity):
         raise ValueError(f"Invalid similarity metric: {similarity}")
 
     # Load dataset
-    ratings = pd.read_csv('./Dataset 100k/u.data', engine='python', sep='\t',
+    ratings = pd.read_csv('../Dataset 100k/u.data', engine='python', sep='\t',
                             names=['user_id', 'item_id', 'rating', 'timestamp'])
-    items = pd.read_csv('./Dataset 100k/u.item', engine='python', sep='\|',
+    items = pd.read_csv('../Dataset 100k/u.item', engine='python', sep='\|',
                         names=['movie id', 'movie title', 'release date', 'video release date', 'IMDb URL ', 'unknown',
                                 'Action', 'Adventure', 'Animation', 'Children', 'Comedy', 'Crime', 'Documentary', 'Drama',
                                 'Fantasy', 'Film-Noir', 'Horror', 'Musical', 'Mystery', 'Romance', 'Sci-Fi', 'Thriller', 'War', 'Western'],

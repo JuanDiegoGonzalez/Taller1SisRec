@@ -25,7 +25,7 @@ class ModelMoviesView(View):
         strval =  request.GET.get("search", False)
         filter_rated = request.GET.get("filter_rated", False)
 
-        items=pd.read_csv('./Dataset 100k/u.item', engine ='python', sep = '\|', names = ['movie_id' ,'movie_title','release date','video release date','imdb_url','unknown',
+        items=pd.read_csv('../Dataset 100k/u.item', engine ='python', sep = '\|', names = ['movie_id' ,'movie_title','release date','video release date','imdb_url','unknown',
                                                 'Action','Adventure','Animation','Children','Comedy','Crime','Documentary','Drama',
                                                 'Fantasy','Film-Noir','Horror','Musical','Mystery','Romance','Sci-Fi','Thriller','War','Western'], encoding='latin-1' )
 
@@ -34,7 +34,7 @@ class ModelMoviesView(View):
             try:
                 user_id = int(request.user.username)
 
-                ratings=pd.read_csv('./Dataset 100k/u.data', engine ='python', sep = '\t', names = ['user_id', 'movie_id', 'rating', 'timestamp'])
+                ratings=pd.read_csv('../Dataset 100k/u.data', engine ='python', sep = '\t', names = ['user_id', 'movie_id', 'rating', 'timestamp'])
                 user_ratings = ratings[ratings["user_id"] == user_id][["movie_id", "rating"]]
 
             # Si es un nuevo usuario
@@ -89,7 +89,7 @@ class ModelOldMoviesView(View):
         strval =  request.GET.get("search", False)
         filter_rated = request.GET.get("filter_rated", False)
 
-        items=pd.read_csv('./Dataset 100k/u.item', engine ='python', sep = '\|', names = ['movie_id' ,'movie_title','release date','video release date','imdb_url','unknown',
+        items=pd.read_csv('../Dataset 100k/u.item', engine ='python', sep = '\|', names = ['movie_id' ,'movie_title','release date','video release date','imdb_url','unknown',
                                                 'Action','Adventure','Animation','Children','Comedy','Crime','Documentary','Drama',
                                                 'Fantasy','Film-Noir','Horror','Musical','Mystery','Romance','Sci-Fi','Thriller','War','Western'], encoding='latin-1' )
 
@@ -98,7 +98,7 @@ class ModelOldMoviesView(View):
             try:
                 user_id = int(request.user.username)
 
-                ratings=pd.read_csv('./Dataset 100k/u.data', engine ='python', sep = '\t', names = ['user_id', 'movie_id', 'rating', 'timestamp'])
+                ratings=pd.read_csv('../Dataset 100k/u.data', engine ='python', sep = '\t', names = ['user_id', 'movie_id', 'rating', 'timestamp'])
                 user_ratings = ratings[ratings["user_id"] == user_id][["movie_id", "rating"]]
             # Si es un nuevo usuario
             except:
@@ -138,7 +138,7 @@ class MovieOldDetailView(View):
     template_name = "movies/movie_detail.html"
 
     def get(self, request, pk) :
-        items=pd.read_csv('./Dataset 100k/u.item', engine ='python', sep = '\|', names = ['movie_id' ,'movie_title','release_date','video release date','imdb_url','unknown',
+        items=pd.read_csv('../Dataset 100k/u.item', engine ='python', sep = '\|', names = ['movie_id' ,'movie_title','release_date','video release date','imdb_url','unknown',
                                                 'Action','Adventure','Animation','Children','Comedy','Crime','Documentary','Drama',
                                                 'Fantasy','Film_Noir','Horror','Musical','Mystery','Romance','Sci_Fi','Thriller','War','Western'], encoding='latin-1' )
 
