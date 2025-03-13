@@ -79,16 +79,6 @@ class ModelMoviesView(View):
         context = {'data' : data, 'search': strval, 'filter_rated': filter_rated}
         return JsonResponse(context)
 
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def rate_movie(request, movie_id, rating):
-    user = request.user
-
-    print(f'Usuario {user} calificó la película {movie_id} con {rating} estrellas.')
-    MovieRating.objects.update_or_create(user=user, movie_id=movie_id, defaults={'rating': rating})
-
-    return Response({'message': 'Calificación registrada con éxito'}, status=200)
-
 #-------------------------------------
 # Anteriores endpoints
 #-------------------------------------

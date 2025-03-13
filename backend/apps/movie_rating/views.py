@@ -10,10 +10,13 @@ import pandas as pd
 from django.http import JsonResponse
 
 from django.http import JsonResponse
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import MovieRating
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+
+import json
 
 #-------------------------------------
 # Nuevos endpoints
@@ -94,15 +97,23 @@ class MovieDetailView(View):
         context = { 'movie' : movie_json[0]}
         return JsonResponse(context)
 
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def rate_movie(request, movie_id, rating):
-    user = request.user
+@method_decorator(csrf_exempt, name="dispatch")
+class MovieRateView(View):
+    def post(self, request, movie_id):
+        try:
+            data = json.loads(request.body)
+            user_id = data.get("user_id")
+            rating = data.get("rating")
 
-    print(f'Usuario {user} calificó la película {movie_id} con {rating} estrellas.')
-    MovieRating.objects.update_or_create(user=user, movie_id=movie_id, defaults={'rating': rating})
+            print(f'Usuario {user_id} calificó la película {movie_id} con {rating} estrellas.')
+            MovieRating.objects.update_or_create(user_id=user_id, movie_id=movie_id, defaults={'rating': rating})
 
-    return Response({'message': 'Calificación registrada con éxito'}, status=200)
+            return JsonResponse({"success": "Movie rated succesfully"}, safe=False)
+
+        except json.JSONDecodeError:
+
+            return JsonResponse({"error": "Invalid JSON"}, status=400)
+
 
 #-------------------------------------
 # Anteriores endpoints

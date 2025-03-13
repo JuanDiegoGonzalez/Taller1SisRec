@@ -11,14 +11,12 @@ from apps.model.forms import CreateForm
 from apps.model.process import predict
 from apps.movie_rating.models import MovieRating
 from apps.movie.models import Movie
-from django.contrib.auth.models import User
 
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 
 from surprise import Reader, Dataset, KNNBasic
 from scipy.sparse import csr_matrix
-from sklearn.metrics.pairwise import pairwise_distances
 
 import time, json, joblib, random
 
