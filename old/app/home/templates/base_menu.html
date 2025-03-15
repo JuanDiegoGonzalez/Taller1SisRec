@@ -1,0 +1,40 @@
+{% extends 'base_bootstrap.html' %}
+{% block navbar %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="margin-top:0.5em; border-radius:10px !important">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold" href="/">
+            {% if user.is_authenticated %}
+            Bienvenido, {{ request.user }}! 🎉
+            {% else %}
+            Taller 1 - Sistemas de Recomendación 🔍
+            {% endif %}
+        </a>
+        <ul class="navbar-nav">
+            <li>
+                <a class="nav-link" href="{% url 'movies:movie_list' %}" role="button">Lista de películas</a>
+            </li>
+            {% if user.is_authenticated %}
+            <li>
+                <a class="nav-link" href="{% url 'model:model_create' %}" role="button">Nueva predicción</a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="rightnavDropdown" role="button"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    <img style="width: 25px;" src="/site/home/static/usuario.png" /><b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="rightnavDropdown">
+                    <form class="dropdown-item" action="{% url 'logout' %}?next={% url 'login' %}" method="post">
+                        {% csrf_token %}
+                        <a href="#" onclick="this.closest('form').submit(); return false;">Logout</a>
+                    </form>
+                </ul>
+            </li>
+            {% else %}
+            <li>
+                <a class="nav-link" href="{% url 'login' %}" role="button">Iniciar sesión</a>
+            </li>
+            {% endif %}
+        </ul>
+    </div>
+</nav>
+{% endblock %}

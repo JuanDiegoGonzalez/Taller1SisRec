@@ -1,0 +1,77 @@
+{% extends "base_menu.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container mt-4 d-flex justify-content-center">
+    <div class="card shadow-sm p-3" style="max-width: 600px; width: 100%;">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Generar predicciones</h4>
+        </div>
+        <div class="card-body">
+            <form action="" method="post" id="upload_form" enctype="multipart/form-data" class="needs-validation"
+                novalidate>
+                {% csrf_token %}
+
+                <!-- Crispy Forms -->
+                <div class="mb-3">
+                    {{ form|crispy }}
+                </div>
+
+                <!-- Buttons -->
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-success btn-custom w-50" id="submit-button">
+                        <i class="bi bi-upload"></i> Enviar
+                    </button>
+                    <button type="reset" class="btn btn-secondary btn-custom w-50" id="clear-button">
+                        <i class="bi bi-x-circle"></i> Limpiar
+                    </button>
+                </div>
+            </form>
+
+            <!-- Progress Bar (Initially Hidden) -->
+            <div id="loading-indicator" class="text-center mt-4" style="display: none;">
+                <!-- <p class="mt-2">⏳ Generando predicciones... (tarda alrededor de 1 minuto)</p> -->
+                <p class="mt-2">⏳ Generando predicciones... (tarda alrededor de 30 segundos)</p>
+                <div class="progress" style="height: 25px;">
+                    <div id="progress-bar" class="progress-bar progress-bar-striped progress-bar-animated bg-primary"
+                        role="progressbar" style="width: 0%;">0%</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+
+<!-- JavaScript to Handle Loading Animation -->
+<script>
+    document.getElementById("upload_form").addEventListener("submit", function (event) {
+        event.preventDefault();  // Prevent immediate submission
+        document.getElementById("upload_form").submit();
+
+        // Disable buttons
+        document.getElementById("submit-button").disabled = true;
+        document.getElementById("clear-button").disabled = true;
+
+        // Show loading indicator
+        document.getElementById("loading-indicator").style.display = "block";
+
+        let progressBar = document.getElementById("progress-bar");
+        let progress = 0;
+        let duration = 35000;  // 100 seconds
+        let intervalTime = duration / 100; // Update every 1% of duration
+
+        let interval = setInterval(() => {
+            progress++;
+            progressBar.style.width = progress + "%";
+            progressBar.textContent = progress + "%";
+
+            if (progress >= 99) {
+                clearInterval(interval);
+            }
+        }, intervalTime);
+    });
+</script>
+
+{% endblock %}
