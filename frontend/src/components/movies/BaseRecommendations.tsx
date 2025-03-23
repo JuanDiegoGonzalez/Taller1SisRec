@@ -1,8 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import { MovieCard } from "./MovieCard"
 import { Skeleton } from "../ui/skeleton"
-import { Button } from "../ui/button"
-import { useNavigate } from "react-router"
 
 interface Movie {
     id: number
@@ -30,13 +28,10 @@ export function BaseRecommendations({
     description, 
     queryKey, 
     tipo, 
-    k,
-    showViewAll = false,
-    viewAllPath
+    k
 }: BaseRecommendationsProps) {
     const userId = localStorage.getItem("username")
     const backendUrl = import.meta.env.VITE_BACKEND_URL
-    const navigate = useNavigate()
 
     const { data, isLoading, error } = useQuery({
         queryKey: [queryKey, userId, k],
@@ -76,14 +71,6 @@ export function BaseRecommendations({
                     <h2 className="text-2xl font-semibold">{title}</h2>
                     <p className="text-muted-foreground mt-2">{description}</p>
                 </div>
-                {showViewAll && viewAllPath && (
-                    <Button 
-                        variant="secondary" 
-                        onClick={() => navigate(viewAllPath)}
-                    >
-                        Ver todas las recomendaciones
-                    </Button>
-                )}
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {isLoading ? (

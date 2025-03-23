@@ -6,8 +6,9 @@ app_name='movie'
 urlpatterns = [
     # Nuevos endpoints
     path('', views.ModelMoviesView.as_view(), name='movie_list'),
-    path('<int:pk>', views.MovieDetailView.as_view(), name='movie_detail'),
-    path('rate_movie/<int:movie_id>/<int:rating>/', views.rate_movie, name='rate_movie'),
+    path('<int:pk>', views.MovieOldDetailView.as_view(), name='movie_detail'),
+    # path('rate_movie/<int:movie_id>/<int:rating>/', views.rate_movie, name='rate_movie'),
+    path('list', views.api_movie_list, name='api_movie_list'),
 
     # Anteriores endpoints
     path('old', views.ModelOldMoviesView.as_view(), name='movie_list'),

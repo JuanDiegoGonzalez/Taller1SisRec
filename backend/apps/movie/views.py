@@ -13,7 +13,7 @@ from django.http import JsonResponse
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from .models import MovieRating
+from apps.movie_rating.models import MovieRating
 
 #-------------------------------------
 # Nuevos endpoints
@@ -149,3 +149,69 @@ class MovieOldDetailView(View):
 
         context = { 'movie' : movie_json[0]}
         return render(request, self.template_name, context)
+
+@api_view(['GET'])
+def api_movie_list(request):
+    strval = request.GET.get("search", False)
+    filter_rated = request.GET.get("filter_rated", False)
+    genre_id = request.GET.get("genre", False)
+
+    from .models import Movie
+    from apps.genre.models import Genre
+    
+    # Get movies from database
+    movies = Movie.objects.all()
+    
+    # Filter by genre if provided
+    if genre_id:
+        try:
+            genre = Genre.objects.get(id=genre_id)
+            movies = genre.movies.all()
+        except Genre.DoesNotExist:
+            pass
+    
+    # Filter by search term
+    if strval:
+        movies = movies.filter(title__icontains=strval)
+    
+    # Filter by user rating
+    if request.user.is_authenticated and filter_rated:
+        # Get only movies rated by the user
+        user_ratings = MovieRating.objects.filter(user=request.user, rating__gt=0).values_list('movie_id', flat=True)
+        movies = movies.filter(id__in=user_ratings)
+
+    # Prepare response data
+    movies_data = []
+    
+    for movie in movies:
+        movie_data = {
+            "movie_id": movie.id,
+            "movie_title": movie.title,
+            "imdb_url": movie.image_url,
+            "avg_rating": movie.avg_rating
+        }
+        
+        # Add rating if user is authenticated
+        if request.user.is_authenticated:
+            try:
+                rating = MovieRating.objects.get(user=request.user, movie=movie).rating
+            except MovieRating.DoesNotExist:
+                rating = 0
+            movie_data["rating"] = rating
+            
+        movies_data.append(movie_data)
+
+    # Paginate results
+    paginator = Paginator(movies_data, 12)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+    
+    data = {
+        "items": page_obj.object_list,
+        "has_next": page_obj.has_next(),
+        "has_previous": page_obj.has_previous(),
+        "current_page": page_obj.number,
+        "total_pages": paginator.num_pages,
+    }
+    
+    return Response(data)

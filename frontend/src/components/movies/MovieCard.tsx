@@ -64,6 +64,7 @@ export function MovieCard({ id, title, image_url, avg_rating, reason = "" }: Mov
   const [selectedRating, setSelectedRating] = useState(0);
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const userId = localStorage.getItem("username");
+  const isLoggedIn = !!userId;
 
   const rateMutation = useMutation({
     mutationFn: async (rating: number) => {
@@ -153,12 +154,11 @@ export function MovieCard({ id, title, image_url, avg_rating, reason = "" }: Mov
           </div>
         ) : (
           <div className="flex gap-2 justify-end">
-            <Button variant="outline">
-              Ver más
-            </Button>
-            <Button onClick={() => setIsRating(true)}>
-              Calificar
-            </Button>
+            {isLoggedIn && (
+              <Button onClick={() => setIsRating(true)} className="w-full">
+                Calificar
+              </Button>
+            )}
           </div>
         )}
       </CardContent>

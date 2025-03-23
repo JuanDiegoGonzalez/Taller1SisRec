@@ -14,14 +14,7 @@ function App() {
     <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
       <BrowserRouter>
         <Routes>
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <Home />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/" element={<Home />} />
           <Route
             path="/recommendations/user-user"
             element={
@@ -46,22 +39,8 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route
-            path="/genres"
-            element={
-              <ProtectedRoute>
-                <GenreExplorer />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/genres/:id"
-            element={
-              <ProtectedRoute>
-                <GenreMovies />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/genres" element={<GenreExplorer />} />
+          <Route path="/genres/:id" element={<GenreMovies />} />
           <Route path="/login" element={<Login />} />
         </Routes>
       </BrowserRouter>
