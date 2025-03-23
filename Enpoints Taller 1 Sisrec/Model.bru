@@ -1,0 +1,22 @@
+meta {
+  name: Model
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{backend}}/model/
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+      "modelo": "Pearson",
+      "tipo": "Usuario-Usuario",
+      "k": 20,
+      "user": {
+          "username": {{username}}
+      }
+  }
+}

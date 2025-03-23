@@ -1,7 +1,7 @@
 import { Button } from "./ui/button"
 import { ModeToggle } from "./mode-toggle"
 import { useNavigate, useLocation } from "react-router"
-import { ChevronLeft, Home } from "lucide-react"
+import { ChevronLeft, Home, Star } from "lucide-react"
 
 export function Header() {
     const navigate = useNavigate()
@@ -40,6 +40,14 @@ export function Header() {
                     <h1 className="text-2xl font-bold">Bienvenido, {username}!</h1>
                 </div>
                 <div className="flex items-center gap-4">
+                    <Button 
+                        variant="ghost" 
+                        className="flex items-center gap-2"
+                        onClick={() => navigate("/user-ratings")}
+                    >
+                        <Star className="h-4 w-4" />
+                        <span>Mis Calificaciones</span>
+                    </Button>
                     <Button variant="outline" onClick={handleLogout}>
                         Cerrar sesión
                     </Button>

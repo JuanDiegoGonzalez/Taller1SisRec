@@ -40,11 +40,9 @@ class MovieRateView(View):
 
 @method_decorator(csrf_exempt, name="dispatch")
 class MovieUserRatingView(View):
-    def get(self, request):
+    def get(self, request, user_id):
         try:
-            data = json.loads(request.body)
-            user_id = data.get("user_id")
-            user_ratings = MovieRating.objects.filter(user_id=user_id).select_related('movie')
+            user_ratings = MovieRating.objects.filter(user_id=user_id).select_related('movie').order_by('movie_id')
 
             if not user_ratings.exists():
                 return JsonResponse({"error": f"No movies found for user {user_id}"}, status=404)

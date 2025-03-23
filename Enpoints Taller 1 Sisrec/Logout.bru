@@ -1,0 +1,22 @@
+meta {
+  name: Logout
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{backend}}/logout/
+  body: none
+  auth: none
+}
+
+tests {
+  test("Check for 200 OK", function () {
+      expect(res.getStatus()).to.equal(200);
+  //     pm.response.to.be.json;
+  
+      const responseJson = res.getBody();
+      expect(responseJson).to.have.property("message", "Logout exitoso");
+  });
+  
+}

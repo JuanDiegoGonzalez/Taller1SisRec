@@ -1,0 +1,42 @@
+meta {
+  name: Login
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{backend}}/login/
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+     "username": "154",
+     "password": "password154"
+  }
+}
+
+script:pre-request {
+  bru.setGlobalEnvVar("random_id", Date.now());
+  
+}
+
+tests {
+  test("Check for 200 OK", function () {
+      expect(res.getStatus()).to.equal(200);
+  //     pm.response.to.be.json;
+  
+      const responseJson = res.getBody();
+      expect(responseJson).to.have.property("message", "Login exitoso");
+      expect(responseJson).to.have.property("username");
+  
+      bru.setEnvVar('username', responseJson.username);
+  
+  //     var cookies = pm.cookies.get('csrftoken');
+      if (cookies) {
+          bru.setEnvVar('csrftoken', cookies);
+      }
+  });
+  
+}

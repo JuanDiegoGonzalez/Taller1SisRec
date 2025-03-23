@@ -1,0 +1,22 @@
+meta {
+  name: Movies
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{backend}}/movies/
+  body: none
+  auth: none
+}
+
+tests {
+  test("Check for 200 OK", function () {
+      expect(res.getStatus()).to.equal(200);
+  //     pm.response.to.be.json;
+  
+      let jsonData = res.getBody();
+      expect(jsonData).to.have.property("data");
+  });
+  
+}

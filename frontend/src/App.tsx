@@ -5,6 +5,8 @@ import Home from "./pages/home"
 import Login from "./pages/login"
 import UserRecommendations from "./pages/recommendations/user-user"
 import MovieRecommendations from "./pages/recommendations/item-item"
+import UserRatings from "./pages/user-ratings"
+
 function App() {
   return (
     <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
@@ -31,6 +33,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <MovieRecommendations />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/user-ratings"
+            element={
+              <ProtectedRoute>
+                <UserRatings />
               </ProtectedRoute>
             }
           />

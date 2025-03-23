@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "Enpoints Taller 1 Sisrec",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}
