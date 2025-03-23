@@ -11,7 +11,9 @@ export function Header() {
     
     const handleLogout = () => {
         localStorage.removeItem("username")
-        navigate("/login")
+        navigate("/")
+        // reload the page
+        window.location.reload()
     }
 
     const showBackButton = location.pathname !== "/"

@@ -60,8 +60,8 @@ export default function Home() {
         
         {isLoggedIn ? (
           <>
-            <UserUserRecommendations />
-            <ItemItemRecommendations />
+            <UserUserRecommendations showViewAll={true} viewAllPath="/recommendations/user-user" />
+            <ItemItemRecommendations showViewAll={true} viewAllPath="/recommendations/item-item" />
           </>
         ) : (
           <AllMovies />

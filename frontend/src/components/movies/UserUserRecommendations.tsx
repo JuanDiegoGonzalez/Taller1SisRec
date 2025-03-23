@@ -1,6 +1,6 @@
 import { BaseRecommendations } from "./BaseRecommendations"
 
-export function UserUserRecommendations({ k = 4 }) {
+export function UserUserRecommendations({ k = 4, showViewAll = false, viewAllPath = "/recommendations/user-user" }) {
     return (
         <BaseRecommendations
             title="Películas recomendadas para ti"
@@ -8,6 +8,8 @@ export function UserUserRecommendations({ k = 4 }) {
             queryKey="user-user-recommendations"
             tipo="Usuario-Usuario"
             k={k}
+            showViewAll={showViewAll}
+            viewAllPath={viewAllPath}
         />
     )
 } 
