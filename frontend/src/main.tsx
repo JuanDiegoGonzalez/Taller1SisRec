@@ -7,7 +7,7 @@ import {
 import './index.css'
 import App from './App.tsx'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-
+import { Toaster } from "@/components/ui/sonner"
 
 const queryClient = new QueryClient()
 
@@ -16,6 +16,7 @@ createRoot(document.getElementById('root')!).render(
     <QueryClientProvider client={queryClient}>
       <ReactQueryDevtools initialIsOpen={false} />
       <App />
+      <Toaster />
     </QueryClientProvider>
   </StrictMode>,
 )

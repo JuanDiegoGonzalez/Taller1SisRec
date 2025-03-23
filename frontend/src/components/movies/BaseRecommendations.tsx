@@ -10,6 +10,7 @@ interface Movie {
     image_url: string
     avg_rating: number
     estimation: number
+    reason: string
 }
 
 type PredictionResponse = Movie[]
@@ -102,6 +103,7 @@ export function BaseRecommendations({
                             image_url={movie.image_url}
                             avg_rating={movie.avg_rating}
                             estimation={movie.estimation}
+                            reason={movie.reason}
                         />
                     ))
                 )}

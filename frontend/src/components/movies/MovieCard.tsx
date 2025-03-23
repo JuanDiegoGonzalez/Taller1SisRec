@@ -5,11 +5,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { Star, StarHalf } from "lucide-react"
+import { Star, StarHalf, Info } from "lucide-react"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useMutation } from "@tanstack/react-query"
+import { toast } from "sonner"
+
 
 interface MovieCardProps {
   id: number
@@ -17,6 +19,7 @@ interface MovieCardProps {
   title: string
   image_url: string
   avg_rating: number
+  reason: string
 }
 
 function StarRating({ rating, onClick }: { rating: number, onClick?: (rating: number) => void }) {
@@ -56,7 +59,7 @@ function StarRating({ rating, onClick }: { rating: number, onClick?: (rating: nu
   );
 }
 
-export function MovieCard({ id, title, image_url, avg_rating }: MovieCardProps) {
+export function MovieCard({ id, title, image_url, avg_rating, reason }: MovieCardProps) {
   const [isRating, setIsRating] = useState(false);
   const [selectedRating, setSelectedRating] = useState(0);
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -64,12 +67,12 @@ export function MovieCard({ id, title, image_url, avg_rating }: MovieCardProps) 
 
   const rateMutation = useMutation({
     mutationFn: async (rating: number) => {
-      const response = await fetch(`${backendUrl}/movies/rate_movie/${id}/${rating}/`, {
+      const response = await fetch(`${backendUrl}/movies/rate_movie/${id}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ user: Number(userId) }),
+        body: JSON.stringify({ user_id: Number(userId), rating: rating }),
       });
 
       if (!response.ok) {
@@ -79,7 +82,7 @@ export function MovieCard({ id, title, image_url, avg_rating }: MovieCardProps) 
       return response.json();
     },
     onSuccess: () => {
-
+      toast.success("Película calificada con éxito");
       setIsRating(false);
       setSelectedRating(0);
     },
@@ -101,7 +104,17 @@ export function MovieCard({ id, title, image_url, avg_rating }: MovieCardProps) 
         />
       </div>
       <CardHeader>
-        <CardTitle className="line-clamp-1">{title}</CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="line-clamp-1">{title}</CardTitle>
+          <HoverCard>
+            <HoverCardTrigger>
+              <Info className="h-4 w-4 text-muted-foreground hover:text-primary cursor-help" />
+            </HoverCardTrigger>
+            <HoverCardContent>
+              <span className="text-sm">{reason}</span>
+            </HoverCardContent>
+          </HoverCard>
+        </div>
         <CardDescription className="space-y-1">
           <HoverCard>
             <HoverCardTrigger>
