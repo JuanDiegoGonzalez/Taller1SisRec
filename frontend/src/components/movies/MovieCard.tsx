@@ -22,7 +22,7 @@ interface MovieCardProps {
   reason?: string
 }
 
-function StarRating({ rating, onClick }: { rating: number, onClick?: (rating: number) => void }) {
+export function StarRating({ rating, onClick }: { rating: number, onClick?: (rating: number) => void }) {
   const totalStars = 5;
   const fullStars = Math.floor(rating);
   const hasHalfStar = rating % 1 >= 0.5;

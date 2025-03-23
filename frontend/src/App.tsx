@@ -3,6 +3,7 @@ import { Route, Routes, BrowserRouter } from "react-router"
 import { ProtectedRoute } from "./components/protected-route"
 import Home from "./pages/home"
 import Login from "./pages/login"
+import Register from "./pages/register"
 import UserRecommendations from "./pages/recommendations/user-user"
 import MovieRecommendations from "./pages/recommendations/item-item"
 import UserRatings from "./pages/user-ratings"
@@ -42,6 +43,7 @@ function App() {
           <Route path="/genres" element={<GenreExplorer />} />
           <Route path="/genres/:id" element={<GenreMovies />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
