@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Inicio - Backend</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+
+    <div class="container mt-5">
+        <div class="card shadow-lg">
+            <div class="card-header bg-primary text-white text-center">
+                <h1 class="my-2">Bienvenido al Backend</h1>
+            </div>
+            <div class="card-body text-center">
+                <p class="lead">Accede a los endpoints de consulta (GET) desde aquí:</p>
+                <ul class="list-group list-group-flush">
+                    {% for endpoint in endpoints %}
+                    <li class="list-group-item">
+                        <a href="{{ endpoint.url }}" class="btn btn-outline-primary btn-lg w-100">
+                            {{ endpoint.name }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

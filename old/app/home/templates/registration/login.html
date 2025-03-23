@@ -1,0 +1,60 @@
+{% extends "base_menu.html" %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="container mt-5">
+  <h1 class="text-center mb-4">🔑 Iniciar Sesión</h1>
+
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <form method="post" action="{% url 'login' %}" class="card p-4 shadow-sm">
+        {% csrf_token %}
+
+        <!-- Display error message if login fails -->
+        {% if form.errors %}
+        <div class="alert alert-danger text-center">
+          ❌ Usuario o contraseña incorrectos. Inténtalo de nuevo.
+        </div>
+        {% endif %}
+
+        <!-- Render form fields with placeholders -->
+        {% for field in form %}
+        <div class="mb-3 row">
+          <label for="{{ field.id_for_label }}" class="col-sm-4 col-form-label text-end">
+            {{ field.label }}
+          </label>
+          <div class="col-sm-8">
+            {% if field.name == "username" %}
+            {{ field|add_class:"form-control"|attr:"placeholder:154 (entre 10 y 943)" }}
+            {% elif field.name == "password" %}
+            {{ field|add_class:"form-control"|attr:"placeholder:password154 (\"password\" + el número de arriba)" }}
+            {% else %}
+            {{ field|add_class:"form-control" }}
+            {% endif %}
+
+            {% if field.errors %}
+            <div class="text-danger small">
+              {{ field.errors|join:", " }}
+            </div>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+
+        <!-- Form buttons -->
+        <div class="text-center">
+          <button type="submit" class="btn btn-primary">🔓 Ingresar</button>
+        </div>
+        <input type="hidden" name="next" value="{{ next }}" />
+      </form>
+
+      <!-- Link to register -->
+      <div class="text-center mt-3">
+        <p>¿No tienes una cuenta?
+          <a href="{% url 'register' %}" class="text-primary fw-bold">Regístrate aquí</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
