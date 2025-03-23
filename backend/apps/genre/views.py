@@ -14,7 +14,7 @@ class ModelGenresView(View):
         movies = genre.movies.all().order_by("id")
 
         # Pagination
-        paginator = Paginator(movies, 10)  # 10 movies per page
+        paginator = Paginator(movies, 12)  # 10 movies per page
         page_number = request.GET.get("page")
         page_obj = paginator.get_page(page_number)
 
@@ -40,3 +40,16 @@ class ModelGenresView(View):
         }
 
         return JsonResponse(data, safe=False)
+    
+class ModelAllGenresView(View):
+    def get(self, request):
+        genres = Genre.objects.all()
+        # Serialize the genres queryset to a list of dictionaries
+        serialized_genres = [
+            {
+                "id": genre.id,
+                "name": genre.name
+            }
+            for genre in genres
+        ]
+        return JsonResponse(serialized_genres, safe=False)

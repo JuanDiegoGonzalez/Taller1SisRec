@@ -2,7 +2,7 @@ import { Header } from "../components/Header"
 import { UserUserRecommendations } from "@/components/movies/UserUserRecommendations"
 import { ItemItemRecommendations } from "@/components/movies/ItemItemRecommendations"
 import { Button } from "@/components/ui/button"
-import { Star } from "lucide-react"
+import { Star, Film } from "lucide-react"
 import { useNavigate } from "react-router"
 
 export default function Home() {
@@ -12,8 +12,8 @@ export default function Home() {
     <div className="min-h-svh">
       <Header />
       <main className="container px-4 mx-auto">
-        <section className="pt-8">
-          <div className="bg-secondary/30 rounded-lg p-6">
+        <section className="py-8">
+          {/* <div className="bg-secondary/30 rounded-lg p-6 mb-8">
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-2xl font-semibold flex items-center gap-2">
@@ -26,6 +26,23 @@ export default function Home() {
               </div>
               <Button onClick={() => navigate("/user-ratings")}>
                 Ver mis calificaciones
+              </Button>
+            </div>
+          </div> */}
+          
+          <div className="bg-secondary/30 rounded-lg p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-semibold flex items-center gap-2">
+                  <Film className="h-5 w-5" />
+                  Explorar por Género
+                </h2>
+                <p className="text-muted-foreground mt-2">
+                  Descubre películas organizadas por género para encontrar exactamente lo que buscas.
+                </p>
+              </div>
+              <Button onClick={() => navigate("/genres")}>
+                Explorar géneros
               </Button>
             </div>
           </div>

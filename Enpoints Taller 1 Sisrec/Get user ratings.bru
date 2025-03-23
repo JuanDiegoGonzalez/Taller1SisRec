@@ -5,7 +5,13 @@ meta {
 }
 
 get {
-  url: {{backend}}/movies/user_rating
+  url: {{backend}}/movies/user_rating/11
   body: none
   auth: none
+}
+
+body:json {
+  {
+    "user_id": 11
+  }
 }

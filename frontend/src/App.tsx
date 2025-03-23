@@ -6,6 +6,8 @@ import Login from "./pages/login"
 import UserRecommendations from "./pages/recommendations/user-user"
 import MovieRecommendations from "./pages/recommendations/item-item"
 import UserRatings from "./pages/user-ratings"
+import GenreExplorer from "./pages/genres/index"
+import GenreMovies from "./pages/genres/[id]"
 
 function App() {
   return (
@@ -41,6 +43,22 @@ function App() {
             element={
               <ProtectedRoute>
                 <UserRatings />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/genres"
+            element={
+              <ProtectedRoute>
+                <GenreExplorer />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/genres/:id"
+            element={
+              <ProtectedRoute>
+                <GenreMovies />
               </ProtectedRoute>
             }
           />

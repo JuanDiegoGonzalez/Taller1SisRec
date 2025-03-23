@@ -15,11 +15,11 @@ import { toast } from "sonner"
 
 interface MovieCardProps {
   id: number
-  estimation: number
+  estimation?: number
   title: string
   image_url: string
   avg_rating: number
-  reason: string
+  reason?: string
 }
 
 function StarRating({ rating, onClick }: { rating: number, onClick?: (rating: number) => void }) {
@@ -59,7 +59,7 @@ function StarRating({ rating, onClick }: { rating: number, onClick?: (rating: nu
   );
 }
 
-export function MovieCard({ id, title, image_url, avg_rating, reason }: MovieCardProps) {
+export function MovieCard({ id, title, image_url, avg_rating, reason = "" }: MovieCardProps) {
   const [isRating, setIsRating] = useState(false);
   const [selectedRating, setSelectedRating] = useState(0);
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -106,14 +106,16 @@ export function MovieCard({ id, title, image_url, avg_rating, reason }: MovieCar
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="line-clamp-1">{title}</CardTitle>
-          <HoverCard>
-            <HoverCardTrigger>
-              <Info className="h-4 w-4 text-muted-foreground hover:text-primary cursor-help" />
+          {reason && (
+            <HoverCard>
+              <HoverCardTrigger>
+                <Info className="h-4 w-4 text-muted-foreground hover:text-primary cursor-help" />
             </HoverCardTrigger>
             <HoverCardContent>
               <span className="text-sm">{reason}</span>
-            </HoverCardContent>
-          </HoverCard>
+              </HoverCardContent>
+            </HoverCard>
+          )}
         </div>
         <CardDescription className="space-y-1">
           <HoverCard>
