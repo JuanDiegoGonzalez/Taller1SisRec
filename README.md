@@ -24,7 +24,7 @@ Python 3.12.9
 2. Agregar el archivo .env con las credenciales de la base de datos
 3. Ingresar a la ruta: `http://127.0.0.1:8000/`
 
-### Frontend
+### Frontend:
 
 1. Desde una terminal, en la carpeta raíz del repositorio, ejecutar los comandos:
    - `cd .\frontend\`
